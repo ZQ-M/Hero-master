@@ -1,0 +1,20 @@
+# Object files
+*.d
+*.o
+*.hex
+*.map
+*.crf
+
+# lst file
+/MDK-ARM/*.lst
+
+# User Config
+*.uvguix.*
+/MDK-ARM/.vscode
+
+# Object
+/MDK-ARM/DebugConfig
+/MDK-ARM/hero
+/MDK-ARM/RTE
+
+*.pch
