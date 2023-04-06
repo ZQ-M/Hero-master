@@ -27,11 +27,11 @@ void StartReferenceTaskTask(void const *argument)
                 uart8_rx_available_buffer_index = Get_Reference_Available_Bufferx();
                 memcpy(date_copy, reference_system_rxd_buffer[uart8_rx_available_buffer_index], *rxd_data_len); ///< 拷贝原始数据
 
-                // 调试打印
+                //调试打印
                 // debug_showdata1("judge_buf_len", *rxd_data_len); //数据长度
                 // for (uint8_t i = 0; i < *rxd_data_len; i++)
                 // {
-                //     debug_print("%d ", date_copy[i]);//原始数据
+                //     debug_print("%x ", date_copy[i]);//原始数据
                 // }
                 // debug_print("\r\n");
 

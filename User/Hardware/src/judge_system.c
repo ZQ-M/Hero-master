@@ -7,15 +7,15 @@
 
 /* 裁判系统调试宏定义 */
 #if 0
-	#define JUDGE_LOG DEBUG_LOG
-	#define JUDGE_ERROR DEBUG_ERROR
+	#define JUDGE_LOG debug_log
+	#define JUDGE_ERROR debug_error
 #else
 	#define JUDGE_LOG(format, arg...) /* DEBUG OFF */
 	#define JUDGE_ERROR(err) /* DEBUG OFF */
 #endif
 
 #if 0
-	#define JUDGE_ARRAY DEBUG_ARRAY
+	#define JUDGE_ARRAY debug_array1
 #else
 	#define JUDGE_ARRAY(name, data, len)
 #endif

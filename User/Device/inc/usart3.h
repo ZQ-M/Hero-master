@@ -25,7 +25,7 @@
 	#define debug_showdata2(name, data) __printf("<DEBUG> %s = %.2f\r\n",name,data)
 	#define debug_error(err) __printf("<ERROR> error:%d\r\n",err)
 	#define debug_array1(name, data, len) { __printf("<DEBUG>%s : {",name); for(uint16_t __tmp_i=0; __tmp_i<len; __tmp_i++) __printf("%d ", data[__tmp_i]);  __printf("}\r\n"); }
-    #define debug_array2(name, data, len) { __printf("<DEBUG>%s : {",name); for(u16 __tmp_i=0; __tmp_i<len; __tmp_i++) __printf("%.2f ", data[__tmp_i]);  __printf("}\r\n"); }
+  #define debug_array2(name, data, len) { __printf("<DEBUG>%s : {",name); for(u16 __tmp_i=0; __tmp_i<len; __tmp_i++) __printf("%.2f ", data[__tmp_i]);  __printf("}\r\n"); }
 #else
 	#define debug_print(format, ...)
 	#define debug_log(format, arg...)
