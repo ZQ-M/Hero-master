@@ -6,7 +6,7 @@
 #include "gimbal_task.h"
 #include "math.h"
 #include "math2.h"
-#include "referee_system.h"
+#include "judge_system.h"
 #include "config.h"
 
 

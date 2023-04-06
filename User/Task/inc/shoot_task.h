@@ -7,7 +7,8 @@
 #include "can2_device.h"
 #include "stdlib.h"
 #include "console_print.h"
-#include "referee_system.h"
+#include "judge_system.h"
+
 #define RAMP_STEP 80
 typedef struct
 {

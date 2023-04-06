@@ -39,7 +39,7 @@ static CAN_RxHeaderTypeDef *can1_rx_header;
 static uint8_t *can1_rxd_data;
 static Motor_Measure_t m3508_feddback_data[can1_motor_device_number]; ///<类型为解析后的电机数据结构体，后标为CAN1电机编号1~4
 
-/*函数声明*/
+/* 函数声明 */
 void Chassis_Init(void);                                              ///<底盘初始化函数声明
 static uint16_t Calc_Gyro_Speed_By_Power_Limit(uint16_t power_limit); ///<计算功率限制下的小陀螺或者底盘跟随时的电机速度目标值
 void Calc_Gyro_Motors_Speed(float *motors_speed, float rotate_speed,
@@ -204,7 +204,7 @@ void Chassis_Init(void)
     can1_rx_header = Get_CAN1_Rx_Header(); ///< 返回 CAN1 接收数据头结构体指针
 
     Can1_Filter_Init();                                                    ///< CAN1底层初始化
-    referee_date_pt = Get_Referee_Data();                                  ///< 解析后的裁判系统数据
+    referee_date_pt = Get_Judge_Data();                                  ///< 解析后的裁判系统数据
     rc_data_pt = Get_Rc_Parsed_RemoteData_Pointer();                       // 获取解析后的遥控器数据
     robot_mode_data_pt = Get_Parsed_RobotMode_Pointer();                   //机器人模式结构体指针
     chassis_motor_feedback_parsed_data = Get_Can1_Feedback_Data();         // CAN1 总线上电机的反馈数据

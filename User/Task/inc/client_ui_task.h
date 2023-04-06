@@ -1,13 +1,15 @@
 #ifndef _CLIENT_UI_TASK_H_
 #define _CLIENT_UI_TASK_H_
 
+#include "stm32f4xx.h"
 #include "cmsis_os.h"
 #include "uart8.h"
 #include "main.h"
 #include <stdio.h>
 #include <string.h>
 #include "client_ui.h"
-#include "judgment_system.h"
+#include "judge_system.h"
+#include "remote.h"
 
 void OperatorUItask(void const *argument);
 void GrenadeCueLine(uint8_t Color);

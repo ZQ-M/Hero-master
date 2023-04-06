@@ -2,10 +2,8 @@
 #include "string.h"
 #include "math2.h"
 #include "crc_check.h"
-#include "remoter_task.h"
-#include "shooter_task.h"
-#include "power_output.h"
-#include "detect_task.h"
+#include "remote_task.h"
+#include "shoot_task.h"
 
 /* 裁判系统调试宏定义 */
 #if 0
@@ -25,11 +23,11 @@
 #define DATA_LEN_CHECK(datalen, correct_len, err)  if(data_len != correct_len){JUDGE_ERROR(err); return 0;}
 
 //函数声明
-void Find_All_A5(u8 *get_data, u16 data_len, u8 *r_position, u8 *r_a5_length);
-uint8_t Analysis_Frame_Header(u8 *get_data, u16 *r_data_length, u8 *r_seq);
-u8 Check_Package_Crc16(u8 *get_data, u16 data_len);
-uint16_t Analysis_Cmd_Id(u8 *get_data);
-uint8_t Analysis_Data(u8 *get_data, uint16_t data_len);
+void Find_All_A5(uint8_t *get_data, uint16_t data_len, uint8_t *r_position, uint8_t *r_a5_length);
+uint8_t Analysis_Frame_Header(uint8_t *get_data, uint16_t *r_data_length, uint8_t *r_seq);
+uint8_t Check_Package_Crc16(uint8_t *get_data, uint16_t data_len);
+uint16_t Analysis_Cmd_Id(uint8_t *get_data);
+uint8_t Analysis_Data(uint8_t *get_data, uint16_t data_len);
 
 //裁判系统数据定义
 static Judge_data_t judge_data;
@@ -106,17 +104,17 @@ void Judge_System_Connect_List_Init(void)
  * @param data_len 数据长度
  * @return uint8_t 0--解析失败 1--解析成功
  */
-uint8_t Analysis_Judge_System(u8 *get_data, u16 data_len)
+uint8_t Analysis_Judge_System(uint8_t *get_data, uint16_t data_len)
 {
-	u8 a5_position[8]; //0xA5的位置
-	u8 a5_number = 0;  //0xA5的个数（数据包个数）
-	u16 data_length[8];  //每个data数据包的长度
+	uint8_t a5_position[8]; //0xA5的位置
+	uint8_t a5_number = 0;  //0xA5的个数（数据包个数）
+	uint16_t data_length[8];  //每个data数据包的长度
 	
 	//寻找帧头
 	Find_All_A5(get_data, data_len, a5_position, &a5_number);
 	
 	//解析所有数据包
-	for(u8 i=0; i<a5_number; i++)
+	for(uint8_t i=0; i<a5_number; i++)
 	{
 		//解析帧头数据
 		if( Analysis_Frame_Header(&get_data[ (a5_position[i]) ], &data_length[i], NULL) == 0)
@@ -155,11 +153,11 @@ uint8_t Analysis_Judge_System(u8 *get_data, u16 data_len)
  * @param r_position 存放0xA5位置数组
  * @param r_a5_length 返回数组长度的长度
  */
-void Find_All_A5(u8 *get_data, u16 data_len, u8 *r_position, u8 *r_a5_length)
+void Find_All_A5(uint8_t *get_data, uint16_t data_len, uint8_t *r_position, uint8_t *r_a5_length)
 {
 	*r_a5_length = 0;
 	
-	for(u16 i=0; i<data_len; i++)
+	for(uint16_t i=0; i<data_len; i++)
 	{
 		if(get_data[i] == 0xA5)
 		{
@@ -179,7 +177,7 @@ void Find_All_A5(u8 *get_data, u16 data_len, u8 *r_position, u8 *r_a5_length)
  * @param r_seq 返回seq值
  * @return uint8_t 0--解析失败 1--解析成功
  */
-uint8_t Analysis_Frame_Header(u8 *get_data, u16 *r_data_length, u8 *r_seq)
+uint8_t Analysis_Frame_Header(uint8_t *get_data, uint16_t *r_data_length, uint8_t *r_seq)
 {
 	// JUDGE_ARRAY("head", get_data, 5);
 	
@@ -218,9 +216,9 @@ uint8_t Analysis_Frame_Header(u8 *get_data, u16 *r_data_length, u8 *r_seq)
  * 
  * @param get_data 需要解析的数据包
  * @param data_len 包长度
- * @return u8 0--解析失败 1--解析成功
+ * @return uint8_t 0--解析失败 1--解析成功
  */
-u8 Check_Package_Crc16(u8 *get_data, u16 data_len)
+uint8_t Check_Package_Crc16(uint8_t *get_data, uint16_t data_len)
 {
 	return Verify_CRC16_Check_Sum(get_data, data_len);
 }
@@ -232,7 +230,7 @@ u8 Check_Package_Crc16(u8 *get_data, u16 data_len)
  * @param get_data 需要解析的数据包
  * @return uint16_t 命令ID cmd_id
  */
-uint16_t Analysis_Cmd_Id(u8 *get_data)
+uint16_t Analysis_Cmd_Id(uint8_t *get_data)
 {
 	return get_data[5] + (get_data[6]<<8);
 }
@@ -245,7 +243,7 @@ uint16_t Analysis_Cmd_Id(u8 *get_data)
  * @param data_len data的长度
  * @return uint8_t 0--解析失败 1--解析成功
  */
-uint8_t Analysis_Data(u8 *get_data, uint16_t data_len)
+uint8_t Analysis_Data(uint8_t *get_data, uint16_t data_len)
 {
 	Judge_System_Connect_Item_Node* node = &judge_system_connect_root;
 	uint16_t cmd_id = get_data[5] | (get_data[6]<<8);
@@ -272,18 +270,5 @@ uint8_t Analysis_Data(u8 *get_data, uint16_t data_len)
 	return 0x0A;
 }
 
-// 不该放这的函数，之后必须改掉
-// 判断1号17mm发射机构是否超热量
-u8 Is_Id1_17mm_Excess_Heat(const Judge_data_t* judge_data)
-{
-	if(judge_data->ext_game_robot_status_t.shooter_id1_17mm_cooling_limit == 65535 || Get_Module_Online_State(5) == 0)
-	{
-		return 0;
-	}
-	if(judge_data->ext_game_robot_status_t.shooter_id1_17mm_cooling_limit <= (judge_data->power_heat_data.shooter_id1_17mm_cooling_heat + 12 ))
-	{
-		return 1;
-	}
-	return 0;
-}
+
 

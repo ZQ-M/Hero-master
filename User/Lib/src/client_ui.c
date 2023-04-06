@@ -130,7 +130,7 @@ void UI_Delete(uint8_t* send_buf, uint8_t Del_Operate,uint8_t Del_Layer)
  * @param End_x 结束坐标
  * @param End_y 结束坐标
  */
-void Line_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 End_x, u32 End_y)
+void Line_Draw(Graph_Data *image, char imagename[3], uint32_t Graph_Operate, uint32_t Graph_Layer, uint32_t Graph_Color, uint32_t Graph_Width, uint32_t Start_x, uint32_t Start_y, uint32_t End_x, uint32_t End_y)
 {
 	for (int i = 0; i < 3 && imagename[i] != '\0'; i++)
 	{
@@ -161,7 +161,7 @@ void Line_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Grap
  * @param End_x 结束坐标（对顶角坐标）
  * @param End_y 结束坐标（对顶角坐标）
  */
-void Rectangle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 End_x, u32 End_y)
+void Rectangle_Draw(Graph_Data *image, char imagename[3], uint32_t Graph_Operate, uint32_t Graph_Layer, uint32_t Graph_Color, uint32_t Graph_Width, uint32_t Start_x, uint32_t Start_y, uint32_t End_x, uint32_t End_y)
 {
 	for (int i = 0; i < 3 && imagename[i] != '\0'; i++)
 	{
@@ -192,7 +192,7 @@ void Rectangle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32
  * @param Start_y 圆心坐标
  * @param Graph_Radius 图形半径
  */
-void Circle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 Graph_Radius)
+void Circle_Draw(Graph_Data *image, char imagename[3], uint32_t Graph_Operate, uint32_t Graph_Layer, uint32_t Graph_Color, uint32_t Graph_Width, uint32_t Start_x, uint32_t Start_y, uint32_t Graph_Radius)
 {
 	for (int i = 0; i < 3 && imagename[i] != '\0'; i++)
 	{
@@ -224,7 +224,7 @@ void Circle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Gr
  * @param x_Length x,y方向上轴长，参考椭圆
  * @param y_Length x,y方向上轴长，参考椭圆
  */
-void Arc_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_StartAngle, u32 Graph_EndAngle, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 x_Length, u32 y_Length)
+void Arc_Draw(Graph_Data *image, char imagename[3], uint32_t Graph_Operate, uint32_t Graph_Layer, uint32_t Graph_Color, uint32_t Graph_StartAngle, uint32_t Graph_EndAngle, uint32_t Graph_Width, uint32_t Start_x, uint32_t Start_y, uint32_t x_Length, uint32_t y_Length)
 {
 	for (int i = 0; i < 3 && imagename[i] !='\0'; i++)
 	{
@@ -293,7 +293,7 @@ void Float_Draw(Graph_Data *image, char imagename[3], uint32_t Graph_Operate, ui
  * @param Start_y 开始坐标
  * @param Char_Data 待发送字符串开始地址
  */
-void Char_Draw(String_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Size, u32 Graph_Digit, u32 Graph_Width, u32 Start_x, u32 Start_y, char *Char_Data)
+void Char_Draw(String_Data *image, char imagename[3], uint32_t Graph_Operate, uint32_t Graph_Layer, uint32_t Graph_Color, uint32_t Graph_Size, uint32_t Graph_Digit, uint32_t Graph_Width, uint32_t Start_x, uint32_t Start_y, char *Char_Data)
 {
 	int i;
 	for (int i = 0; i < 3 && imagename[i] != '\0'; i++)

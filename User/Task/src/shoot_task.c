@@ -165,7 +165,7 @@ void shooter_init(void)
     erroe_integral = Get_Error_Integral();
     last_machine_angle = Get_Last_Machine_Angle();
     this_machine_angle = Get_This_Machine_Angle();
-    judge_data = Get_Referee_Data();
+    judge_data = Get_Judge_Data();
 }
 /**
  * @brief                           解析云台两个摩擦轮电机和波轮电机的数据

@@ -151,8 +151,6 @@ void Judge_System_Connect_List_Init(void);
 
 const Judge_data_t* Get_Judge_Data(void);
 
-uint8_t Analysis_Judge_System(u8 *get_data, u16 data_len);
-
-u8 Is_Id1_17mm_Excess_Heat(const Judge_data_t* judge_data);
+uint8_t Analysis_Judge_System(uint8_t *get_data, uint16_t data_len);
 
 #endif

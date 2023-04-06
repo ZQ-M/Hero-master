@@ -7,6 +7,7 @@
 #include "usart3.h"
 #include "buzzer.h"
 #include "can1_device.h"
+#include "remote_task.h"
 
 enum moduleList
 {

@@ -1,8 +1,6 @@
 #include "monitor_task.h"
-#include "referee_system.h"
+#include "judge_system.h"
 #include "super_capacitor_task.h"
-
-
 
 static Module_status_t module_status[8]; ///< 模块数量
 
@@ -17,10 +15,8 @@ void StartMonitorTask(void const *argument)
 	Led_Flow_Flash();	 ///< 初始化流水灯
 	Buzzer_Bsp_Init();	 ///< 初始化时蜂鸣
 	uint8_t cap_send_cnt = 5;
-	referee_date_pt = Get_Referee_Data();
+	referee_date_pt = Get_Judge_Data();
 	super_capacitor_date = Get_SuperCapacitor_Date();
-
-
 
 	osDelay(50);
 
