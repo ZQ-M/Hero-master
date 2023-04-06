@@ -37,16 +37,13 @@ void StartClientUiTask(void const *argument)
   UI_JUDGE_DATA = Get_Judge_Data();
   for (;;)
   {
-    /* 设置机器人ID */
-    UI_Set_Comparable_Id(UI_Data_CilentID_BHero);
-    /* 榴弹提示线上部分 */
-    Line_Draw(&line_1, "001", UI_Graph_ADD, 9, UI_Color_Green, 2, 961, 550, 961, 600);       //上
-    /* 将更新数据写入 */
-    UI_ReFresh(SendBuff, 1, line_1);
-    /* 获得发送长度 */
-    uint16_t len1 = UI_Get_Send_Data_Len(SendBuff);
-    /* 发送 */
-    Uart8_Transmit_Dma((uint32_t)SendBuff, len1);
+    // /* 设置机器人ID */
+    // UI_Set_Comparable_Id(HERO_IN_WHICH_Camp);
+    // /* 通过手动按下字母发送静态UI - 榴弹提示线 */
+    // GrenadeCueLine(UI_Color_Yellow);
+    // /* 自动更新动态UI - 榴弹提示线 */
+    // Super_Capacitance();
+
     osDelay(UI_SEND_DELAY_TIME_MS);
   }
 }
@@ -67,35 +64,37 @@ void StartClientUiTask(void const *argument)
 */
 void GrenadeCueLine(uint8_t Color)
 {
-  // Line_Draw(&line_2, "002", UI_Graph_ADD, 9, Color, 2, 960, 550, 960, 600);       //上偏移
-  // Line_Draw(&line_3, "003", UI_Graph_ADD, 9, Color, 2, 950, 541, 900, 541);       //左
-  // Line_Draw(&line_4, "004", UI_Graph_ADD, 9, Color, 2, 950, 540, 900, 540);       //左偏移
-  // Line_Draw(&line_5, "005", UI_Graph_ADD, 9, Color, 2, 970, 541, 1020, 541);      //右
-  // Line_Draw(&line_6, "006", UI_Graph_ADD, 9, Color, 2, 970, 540, 1020, 540);      //右偏移
-  // Line_Draw(&Middle_Point, "007", UI_Graph_ADD, 9, Color, 2, 960, 540, 961, 541); //右偏移
-  // /* 将更新数据写入 */
-  // UI_ReFresh(SendBuff, 7, line_1, line_2, line_3, line_4, line_5, line_6, Middle_Point);
-  // /* 获得发送长度 */
-  // uint16_t len1 = UI_Get_Send_Data_Len(SendBuff);
-  // /* 发送 */
-  // Uart8_Transmit_Dma((uint32_t)SendBuff, len1);
-  // osDelay(100);
+  /* 榴弹提示线上部分 */
+  Line_Draw(&line_1, "001", UI_Graph_ADD, 9, Color, 2, 961, 550, 961, 600);       //上
+  Line_Draw(&line_2, "002", UI_Graph_ADD, 9, Color, 2, 960, 550, 960, 600);       //上偏移
+  Line_Draw(&line_3, "003", UI_Graph_ADD, 9, Color, 2, 950, 541, 900, 541);       //左
+  Line_Draw(&line_4, "004", UI_Graph_ADD, 9, Color, 2, 950, 540, 900, 540);       //左偏移
+  Line_Draw(&line_5, "005", UI_Graph_ADD, 9, Color, 2, 970, 541, 1020, 541);      //右
+  Line_Draw(&line_6, "006", UI_Graph_ADD, 9, Color, 2, 970, 540, 1020, 540);      //右偏移
+  Line_Draw(&Middle_Point, "007", UI_Graph_ADD, 9, Color, 2, 960, 540, 961, 541); //右偏移
+  /* 将更新数据写入 */
+  UI_ReFresh(SendBuff, 7, line_1, line_2, line_3, line_4, line_5, line_6, Middle_Point);
+  /* 获得发送长度 */
+  uint16_t len1 = UI_Get_Send_Data_Len(SendBuff);
+  /* 发送 */
+  printf_ui("%s", SendBuff);
+  osDelay(100);
 
-  // /* 榴弹提示线下部分 */
-  // Line_Draw(&line_Mid1, "011", UI_Graph_ADD, 8, Color, 1, 961, 530, 961, 330); //中垂线
-  // Line_Draw(&line_Mid2, "012", UI_Graph_ADD, 8, Color, 1, 960, 530, 960, 330); //中垂线偏移
-  // Line_Draw(&line_A1, "013", UI_Graph_ADD, 8, Color, 1, 860, 430, 1060, 430);  //A抛物线
-  // Line_Draw(&line_A2, "014", UI_Graph_ADD, 8, Color, 1, 860, 429, 1060, 429);  //A抛物线扶正
-  // Line_Draw(&line_B1, "015", UI_Graph_ADD, 8, Color, 1, 900, 380, 1020, 380);  //B抛物线
-  // Line_Draw(&line_B2, "016", UI_Graph_ADD, 8, Color, 1, 900, 379, 1020, 379);  //B抛物线扶正
-  // Line_Draw(&line_C1, "017", UI_Graph_ADD, 8, Color, 1, 920, 330, 1000, 330);  //C抛物线
-  //                                                                              /* 将更新数据写入 */
-  // UI_ReFresh(SendBuff, 7, line_Mid1, line_Mid2, line_A1, line_A2, line_B1, line_B2, line_C1);
-  // /* 获得发送长度 */
-  // uint16_t len2 = UI_Get_Send_Data_Len(SendBuff);
-  // /* 在此填入发送语句 */
-  // Uart8_Transmit_Dma((uint32_t)SendBuff, len2);
-  // osDelay(100);
+  /* 榴弹提示线下部分 */
+  Line_Draw(&line_Mid1, "011", UI_Graph_ADD, 8, Color, 1, 961, 530, 961, 330); //中垂线
+  Line_Draw(&line_Mid2, "012", UI_Graph_ADD, 8, Color, 1, 960, 530, 960, 330); //中垂线偏移
+  Line_Draw(&line_A1, "013", UI_Graph_ADD, 8, Color, 1, 860, 430, 1060, 430);  //A抛物线
+  Line_Draw(&line_A2, "014", UI_Graph_ADD, 8, Color, 1, 860, 429, 1060, 429);  //A抛物线扶正
+  Line_Draw(&line_B1, "015", UI_Graph_ADD, 8, Color, 1, 900, 380, 1020, 380);  //B抛物线
+  Line_Draw(&line_B2, "016", UI_Graph_ADD, 8, Color, 1, 900, 379, 1020, 379);  //B抛物线扶正
+  Line_Draw(&line_C1, "017", UI_Graph_ADD, 8, Color, 1, 920, 330, 1000, 330);  //C抛物线
+                                                                               /* 将更新数据写入 */
+  UI_ReFresh(SendBuff, 7, line_Mid1, line_Mid2, line_A1, line_A2, line_B1, line_B2, line_C1);
+  /* 获得发送长度 */
+  uint16_t len2 = UI_Get_Send_Data_Len(SendBuff);
+  /* 在此填入发送语句 */
+  printf_ui("%s", SendBuff);
+  osDelay(100);
 }
 
 void FrictionWheelSpeed(void)

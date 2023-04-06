@@ -50,6 +50,7 @@ void Parse_Super_Capacitor_RxdData(CAN_RxHeaderTypeDef *can1_rx_header_t, Super_
     cap_data->cap_voltage = (float)(can_message[3] << 8 | can_message[2]) / 100.f;
     cap_data->input_current = (float)(can_message[5] << 8 | can_message[4]) / 100.f;
     cap_data->target_power = (float)(can_message[7] << 8 | can_message[6]) / 100.f;
+    debug_print("%f,%f,%f,%f\r\n",cap_data->input_voltage,cap_data->cap_voltage,cap_data->input_current,cap_data->target_power);
 }
 
 /**
