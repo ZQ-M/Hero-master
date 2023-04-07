@@ -2,6 +2,7 @@
 #define __SUPER_CAPACITOR_TASK_H_
 
 #include "can1_device.h"
+#include "monitor_task.h"
 #include "cmsis_os.h"
 
 typedef struct

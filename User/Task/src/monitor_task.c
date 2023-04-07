@@ -97,21 +97,20 @@ void Classis_Reload(int8_t motor_index)
  */
 void Gimbal_Reload(int8_t motor_index)
 {
-	// bit0代表电机yaw bit1代表电机pitch
-	static uint8_t gimbal_motor_state = 0;
-
-	if (motor_index >= 1 && motor_index <= 2)
+	static uint8_t gimbal_motor[2] = {0, 0};
+	if(motor_index>=0 && motor_index<=1)
 	{
-		gimbal_motor_state |= (0x01 << (motor_index - 1));
+		gimbal_motor[motor_index] = 1;
 	}
 	else
 	{
 		return;
 	}
-	if ((gimbal_motor_state & 0x03) == 0x03)
+	if(gimbal_motor[0] && gimbal_motor[1])
 	{
-		gimbal_motor_state = 0;
-		Module_Status_Reload(&module_status[gimbal_motor]);
+		gimbal_motor[0] = 0;
+		gimbal_motor[1] = 0;
+		Module_Status_Reload(&module_status[2]);
 	}
 }
 

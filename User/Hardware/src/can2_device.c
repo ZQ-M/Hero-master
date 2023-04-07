@@ -20,6 +20,7 @@ static Pid_Position_t motor_pitch_angle_pid_imu = NEW_POSITION_PID(0.2, 0.0, 0.0
 static int error_integral = 0;
 static uint16_t last_machine_angle = 0;
 static uint16_t this_machine_angle = 0;
+static uint8_t Module_Wave_Wheel = 3;
 
 static uint8_t can2_rxd_data_buffer[8];	   ///< 辅助变量，接受电机反馈的原始数据
 static CAN_RxHeaderTypeDef can2_rx_header; ///< 辅助变量，用于 HAL 库函数接受数据，存放关于 CAN 反馈数据的 ID 号等信息
@@ -106,6 +107,7 @@ void Can2_Rx_FIFO0_IT_Callback(void)
 	case CAN_3508_WAVE_ID:
 	{
 		Parse_Wave_Motor_Feedback_Data();
+		Module_Reload(Module_Wave_Wheel);
 	}
 	case CAN_YAW_MOTOR_ID:
 		 {

@@ -13,6 +13,7 @@ static CAN_RxHeaderTypeDef *can1_rx_header_t;
 static uint8_t *can1_rxd_data;
 static int32_t super_capacitor_get_data_signal = 0x00000001;
 static Super_Capacitor_t super_capacitor_t;
+static const uint8_t Module_Super_Capacitor = 6;//第七个灯代表超级电容
 
 extern osThreadId superCapacitorTHandle;
 
@@ -33,6 +34,7 @@ void StartSuperCapacitorTask(void const *argument)
             if (super_capacitor_get_data_event.value.signals == super_capacitor_get_data_signal)
             {
                 Parse_Super_Capacitor_RxdData(can1_rx_header_t, &super_capacitor_t, can1_rxd_data); ///< 解析超级电容数据
+                Module_Reload(Module_Super_Capacitor);
             }
         }
     }
