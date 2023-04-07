@@ -67,7 +67,6 @@ void StartShootTask(void const *argument)
         {
             fric_speed = 0;
             is_ok_fire = 0;
-
             break;
         }
 
@@ -222,7 +221,7 @@ int8_t Updata_Wave_Mouse_Value(int16_t *last_wave_ch_value, int16_t *this_wave_c
     *last_wave_ch_value = *this_wave_ch_value;
     *this_wave_ch_value = rc_data_pt->mouse.press_l;
 
-    if ((*this_wave_ch_value == 1) && (*last_wave_ch_value != 0))
+    if ((*this_wave_ch_value == 1) && (*last_wave_ch_value != 1))
     {
         return 1;
     }
