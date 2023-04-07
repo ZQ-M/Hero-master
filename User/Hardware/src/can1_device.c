@@ -15,7 +15,7 @@ void Set_ChassisMotor_Speed(float speed_fl, float speed_fr, float speed_bl, floa
     int16_t speed3 = Pid_Position_Calc(&motor_bl_speed_pid, speed_bl, chassis_motor_feedback_data[2].speed_rpm);
     int16_t speed4 = Pid_Position_Calc(&motor_br_speed_pid, speed_br, chassis_motor_feedback_data[3].speed_rpm);
 
-    chassis_power_control(&speed1,&speed2,&speed3,&speed4);
+    //chassis_power_control(&speed1,&speed2,&speed3,&speed4);
     Can1_Send_4Msg(
         CAN_CHASSIS_ALL_ID,
         speed1,

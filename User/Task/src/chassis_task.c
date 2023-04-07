@@ -7,23 +7,11 @@
  */
 #include "chassis_task.h"
 /* ºê¶¨Òå */
+#define CHASSIS_SPEED_ZERO 0
 #define OUTPUT_LIMIT(data, limit) Float_Constraion(data, -limit, limit) ///< Êä³öÏÞ·ù
-/* ËÙ¶È±¶ÂÊ */
-#define CHASSIS_MOTOR_DEFAULT_BASE_RATE 5.5f    ///< µ×ÅÌÄ¬ÈÏËÙ¶ÈµÄ±¶ÂÊ
-#define CHASSIS_MOTOR_GYRO_BASE_RATE 5.0f       ///< Ð¡ÍÓÂÝµÄËÙ¶È±¶ÂÊ
-static const float motor_speed_multiple = 13.5; ///< µç»úËÙ¶È±¶ÂÊ
-/* power */
-#define POWER_LIMIT 60.0f
-#define WARNING_POWER 55.0f
-#define WARNING_POWER_BUFF 60.0f
+#define CHASSIS_MOTOR_DEFAULT_BASE_RATE 5.5f                            ///>¼üÊó²Ù×÷ÖÐ£¬µ×ÅÌµÄËÙ¶È±¶ÂÊ
+#define CHASSIS_MOTOR_GYRO_BASE_RATE 5.0f                               ///>µ×ÅÌÐ¡ÍÓÂÝµÄËÙ¶È±¶ÂÊ
 
-#define NO_JUDGE_TOTAL_CURRENT_LIMIT 64000.0f //16000 * 4,
-#define BUFFER_TOTAL_CURRENT_LIMIT 16000.0f
-#define POWER_TOTAL_CURRENT_LIMIT 20000.0f
-/* ÏÞ·ù */
-static float chassis_motor_boost_rate = 4.0f; ///< µ×ÅÌµç»ú±¶ÂÊ
-/* PID²ÎÊýÊµÀý»¯ */
-static Pid_Position_t chassis_follow_pid = NEW_POSITION_PID(0.26, 0, 0.8, 5000, 500, 0, 1000, 500); ///< µ×ÅÌ¸úËæPID
 /* Êý¾ÝÖ¸Õë */
 static Rc_Ctrl_t *rc_data_pt;                               ///< Ö¸Ïò½âÎöºóµÄÒ£¿ØÆ÷½á¹¹ÌåÖ¸Õë
 static Robot_control_data_t *robot_mode_data_pt;            ///< Ö¸Ïò½âÎöºóµÄ»úÆ÷ÈËÄ£Ê½½á¹¹ÌåÖ¸Õë(Ò²°üÀ¨ÁËÐéÄâ¼üÊóÍ¨µÀµÄÖµ)
@@ -31,6 +19,11 @@ static Motor_Measure_t *chassis_motor_feedback_parsed_data; ///< Ö¸Ïò½âÎöºóµÄµ×Å
 static Motor_Measure_t *gimbal_motor_feedback_parsed_data;  ///< Ö¸Ïò½âÎöºóµÄÔÆÌ¨µç»úÊý¾Ý
 static const uint8_t *yaw_motor_index;                      ///< Ö¸Ïòyaw Öáµç»úÔÚÔÆÌ¨µç»úÊý¾ÝÖÐµÄÏÂ±ê
 static const Judge_data_t *referee_date_pt;                 ///< Ö¸Ïò½âÎöºóµÄ²ÃÅÐÏµÍ³Êý¾Ý
+
+/* ÏÞ·ù */
+static float chassis_motor_boost_rate = 1.0f; ///< µ×ÅÌµç»ú±¶ÂÊ
+/* PID²ÎÊýÊµÀý»¯ */
+static Pid_Position_t chassis_follow_pid = NEW_POSITION_PID(0.26, 0, 0.8, 5000, 500, 0, 1000, 500); ///< µ×ÅÌ¸úËæPID
 
 /* ÒÆÖ²×ÔCAN1½âÎö */
 static const uint8_t can1_motor_device_number = 4;
@@ -40,19 +33,19 @@ static uint8_t *can1_rxd_data;
 static Motor_Measure_t m3508_feddback_data[can1_motor_device_number]; ///<ÀàÐÍÎª½âÎöºóµÄµç»úÊý¾Ý½á¹¹Ìå£¬ºó±êÎªCAN1µç»ú±àºÅ1~4
 
 /* º¯ÊýÉùÃ÷ */
-void Chassis_Init(void);                                              ///<µ×ÅÌ³õÊ¼»¯º¯ÊýÉùÃ÷
-static uint16_t Calc_Gyro_Speed_By_Power_Limit(uint16_t power_limit); ///<¼ÆËã¹¦ÂÊÏÞÖÆÏÂµÄÐ¡ÍÓÂÝ»òÕßµ×ÅÌ¸úËæÊ±µÄµç»úËÙ¶ÈÄ¿±êÖµ
-void Calc_Gyro_Motors_Speed(float *motors_speed, float rotate_speed,
-                            float move_direction, float x_move_speed, float y_move_speed); ///< ¼ÆËãÐ¡ÍÓÂÝÊ±µÄµç»úËÙ¶È
+void Chassis_Init(void);
+static uint16_t Calc_Gyro_Speed_By_Power_Limit(uint16_t power_limit);
+static float Calc_Chassis_Follow(void);
+static void Calc_Gyro_Motors_Speed(float *motors_speed, float rotate_speed, float move_direction, float x_move_speed, float y_move_speed);
 
 void StartChassisTask(void const *argument)
 {
-    static float chassis_motor_speed[4] = {0.0, 0.0, 0.0, 0.0}; ///< ´ý·¢ËÍµÄµç»úËÙ¶ÈÖµ
-    float follow_pid_output;                                    ///< ¸úËæPIDÊä³ö
+    static float motor_speed[4] = {0.0, 0.0, 0.0, 0.0}; ///< ´ý·¢ËÍµÄµç»úËÙ¶ÈÖµ
+    float follow_pid_output;                            ///< ¸úËæPIDÊä³ö
 
     Chassis_Init(); ///<µ×ÅÌ³õÊ¼»¯
 
-    osDelay(1000);
+    osDelay(500);
 
     for (;;)
     {
@@ -60,56 +53,59 @@ void StartChassisTask(void const *argument)
         ///<Ñ¡Ôñ²Ù×÷Éè±¸    ¼üÊó&Ò£¿ØÆ÷
         if (robot_mode_data_pt->mode.control_device == mouse_keyboard_device_ENUM) ///< ¼üÊóÄ£Ê½
         {
-            /**
-             * Ñ¡Ôñµ×ÅÌÔÆÌ¨Ä£Ê½:    1µ×ÅÌ¸úËæ   2Ð¡ÍÓÂÝ   3ÌØÊâÄ£Ê½
-             *
-             * ÌØÊâÄ£Ê½¼´²»Ê¹ÓÃÍÓÂÝÒÇÊý¾Ý£¬ÒÔµ±Ç°ÔÆÌ¨×ø±êÏµ×÷Îªµ×ÅÌ×ø±êÏµ£¬¼´Ç°½øºóÍËÒÔÔÆÌ¨ÊÓ½ÇÎª×¼
-             * ÌØÊâÄ£Ê½ÊÇÓÃÓÚÍÓÂÝÒÇÊ§Ð§Ê±±¸ÓÃµÄÄ£Ê½£¬Ò²ÊÇÉÏµçÖ®ºóµÄ³õÊ¼Ä£Ê½
-             */
             switch (robot_mode_data_pt->mode.mouse_keyboard_chassis_mode)
             {
             case mk_chassis_follow_mode_ENUM: ///<µ×ÅÌ¸úËæ
             {
                 follow_pid_output = Calc_Chassis_Follow(); ///< ¼ÆËã¸úËæPIDÊä³ö
 
-                chassis_motor_speed[0] = robot_mode_data_pt->virtual_rocker.ch2 + robot_mode_data_pt->virtual_rocker.ch3 + follow_pid_output + rc_data_pt->mouse.x / 0.38f;
-                chassis_motor_speed[1] = robot_mode_data_pt->virtual_rocker.ch2 - robot_mode_data_pt->virtual_rocker.ch3 + follow_pid_output + rc_data_pt->mouse.x / 0.38f;
-                chassis_motor_speed[2] = -robot_mode_data_pt->virtual_rocker.ch2 + robot_mode_data_pt->virtual_rocker.ch3 + follow_pid_output + rc_data_pt->mouse.x / 0.38f;
-                chassis_motor_speed[3] = -robot_mode_data_pt->virtual_rocker.ch2 - robot_mode_data_pt->virtual_rocker.ch3 + follow_pid_output + rc_data_pt->mouse.x / 0.38f;
-                ///< ³ËÒ»¸ö±¶ÂÊ
-                chassis_motor_speed[0] *= (float)(CHASSIS_MOTOR_DEFAULT_BASE_RATE * chassis_motor_boost_rate);
-                chassis_motor_speed[1] *= (float)(CHASSIS_MOTOR_DEFAULT_BASE_RATE * chassis_motor_boost_rate);
-                chassis_motor_speed[2] *= (float)(CHASSIS_MOTOR_DEFAULT_BASE_RATE * chassis_motor_boost_rate);
-                chassis_motor_speed[3] *= (float)(CHASSIS_MOTOR_DEFAULT_BASE_RATE * chassis_motor_boost_rate);
+#if 0 //0¿ªÆô·À»¬(ESP) 1¹Ø±Õ·À»¬
+						motor_speed[0] = robot_mode_data_pt->virtual_rocker.ch2 + robot_mode_data_pt->virtual_rocker.ch3 + follow_pid_output + robot_mode_data_pt->mouse.x/0.38f;
+						motor_speed[1] = robot_mode_data_pt->virtual_rocker.ch2 - robot_mode_data_pt->virtual_rocker.ch3 + follow_pid_output + robot_mode_data_pt->mouse.x/0.38f;
+						motor_speed[2] = -robot_mode_data_pt->virtual_rocker.ch2 + robot_mode_data_pt->virtual_rocker.ch3 + follow_pid_output + robot_mode_data_pt->mouse.x/0.38f;
+						motor_speed[3] = -robot_mode_data_pt->virtual_rocker.ch2 - robot_mode_data_pt->virtual_rocker.ch3 + follow_pid_output + robot_mode_data_pt->mouse.x/0.38f;
+#else
+                Calc_Gyro_Motors_Speed(motor_speed,
+                                       0,
+                                       GM6020_YAW_Angle_To_360(gimbal_motor_feedback_parsed_data[*yaw_motor_index].mechanical_angle),
+                                       robot_mode_data_pt->virtual_rocker.ch3,
+                                       robot_mode_data_pt->virtual_rocker.ch2);
+
+                motor_speed[0] += follow_pid_output + robot_mode_data_pt->virtual_rocker.ch0 / 0.38f;
+                motor_speed[1] += follow_pid_output + robot_mode_data_pt->virtual_rocker.ch0 / 0.38f;
+                motor_speed[2] += follow_pid_output + robot_mode_data_pt->virtual_rocker.ch0 / 0.38f;
+                motor_speed[3] += follow_pid_output + robot_mode_data_pt->virtual_rocker.ch0 / 0.38f;
+#endif
+
+                motor_speed[0] *= (float)(CHASSIS_MOTOR_DEFAULT_BASE_RATE * chassis_motor_boost_rate);
+                motor_speed[1] *= (float)(CHASSIS_MOTOR_DEFAULT_BASE_RATE * chassis_motor_boost_rate);
+                motor_speed[2] *= (float)(CHASSIS_MOTOR_DEFAULT_BASE_RATE * chassis_motor_boost_rate);
+                motor_speed[3] *= (float)(CHASSIS_MOTOR_DEFAULT_BASE_RATE * chassis_motor_boost_rate);
+
+                break;
             }
 
             case mk_chassis_gyro_mode_ENUM: ///<µ×ÅÌÐ¡ÍÓÂÝ
 
             {
                 ///< ¼ÆËãÐ¡ÍÓÂÝÊ±µÄµç»úËÙ¶È
-                Calc_Gyro_Motors_Speed(chassis_motor_speed,
+                Calc_Gyro_Motors_Speed(motor_speed,
                                        Calc_Gyro_Speed_By_Power_Limit(referee_date_pt->power_heat_data.chassis_power),
                                        GM6020_YAW_Angle_To_360(gimbal_motor_feedback_parsed_data[*yaw_motor_index].mechanical_angle),
                                        (float)robot_mode_data_pt->virtual_rocker.ch3 * CHASSIS_MOTOR_GYRO_BASE_RATE * chassis_motor_boost_rate,
                                        (float)robot_mode_data_pt->virtual_rocker.ch2 * CHASSIS_MOTOR_GYRO_BASE_RATE * chassis_motor_boost_rate);
-            }
-
-            case mk_chassis_special_mode_ENUM: ///<ÌØÊâÄ£Ê½
-            {
-                chassis_motor_speed[0] = -robot_mode_data_pt->virtual_rocker.ch3 - robot_mode_data_pt->virtual_rocker.ch2 + robot_mode_data_pt->virtual_rocker.ch0;
-                chassis_motor_speed[1] = robot_mode_data_pt->virtual_rocker.ch3 - robot_mode_data_pt->virtual_rocker.ch2 + robot_mode_data_pt->virtual_rocker.ch0;
-                chassis_motor_speed[2] = -robot_mode_data_pt->virtual_rocker.ch3 + robot_mode_data_pt->virtual_rocker.ch2 + robot_mode_data_pt->virtual_rocker.ch0;
-                chassis_motor_speed[3] = robot_mode_data_pt->virtual_rocker.ch3 + robot_mode_data_pt->virtual_rocker.ch2 + robot_mode_data_pt->virtual_rocker.ch0;
-
-                chassis_motor_speed[0] *= 10.0f;
-                chassis_motor_speed[1] *= 10.0f;
-                chassis_motor_speed[2] *= 10.0f;
-                chassis_motor_speed[3] *= 10.0f;
 
                 break;
             }
-            default:
+
+            case mk_chassis_special_mode_ENUM: ///<ÌØÊâÄ£Ê½£¨ÔÆÌ¨ÍÓÂÝÒÇÊ§Ð§Ê±Ê¹ÓÃ£©
             {
+                Calc_Gyro_Motors_Speed(motor_speed,
+                                       0,
+                                       GM6020_YAW_Angle_To_360(gimbal_motor_feedback_parsed_data[*yaw_motor_index].mechanical_angle),
+                                       robot_mode_data_pt->virtual_rocker.ch3 * 6.0f,
+                                       robot_mode_data_pt->virtual_rocker.ch2 * 6.0f);
+
                 break;
             }
             }
@@ -118,83 +114,74 @@ void StartChassisTask(void const *argument)
         else if (robot_mode_data_pt->mode.control_device == remote_controller_device_ENUM) ///<Ò£¿ØÆ÷¿ØÖÆ
         {
 
-            switch (robot_mode_data_pt->mode.rc_motion_mode) ///<Ñ¡Ôñµ×ÅÌÔÆÌ¨Ä£Ê½
+            switch (robot_mode_data_pt->mode.rc_motion_mode)
             {
-            case rc_stable_chassis_follow_mode_ENUM: ///< 3:µ×ÅÌ¸úËæ+×ÔÎÈÔÆÌ¨
+                //µ×ÅÌ¸úËæ
+            case 1:
+            case 3:
             {
-                /* µ×ÅÌ¸úËæÂß¼­¹²ÓÃ */
-            }
-            case rc_chassis_follow_mode_ENUM: ///< 1£ºµ×ÅÌ¸úËæ+ÊÖ¶¯ÔÆÌ¨
-            {
-                follow_pid_output = Calc_Chassis_Follow(); ///< µ×ÅÌ¸úËæpid
+                follow_pid_output = Calc_Chassis_Follow();
 
-                chassis_motor_speed[0] = rc_data_pt->rc.ch3 + rc_data_pt->rc.ch2 + follow_pid_output + rc_data_pt->rc.ch0 / 2.9f;
-                chassis_motor_speed[1] = -rc_data_pt->rc.ch3 + rc_data_pt->rc.ch2 + follow_pid_output + rc_data_pt->rc.ch0 / 2.9f;
-                chassis_motor_speed[2] = rc_data_pt->rc.ch3 - rc_data_pt->rc.ch2 + follow_pid_output + rc_data_pt->rc.ch0 / 2.9f;
-                chassis_motor_speed[3] = -rc_data_pt->rc.ch3 - rc_data_pt->rc.ch2 + follow_pid_output + rc_data_pt->rc.ch0 / 2.9f;
+                motor_speed[0] = rc_data_pt->rc.ch2 + rc_data_pt->rc.ch3 + follow_pid_output + rc_data_pt->rc.ch0 / 2.9f;
+                motor_speed[1] = rc_data_pt->rc.ch2 - rc_data_pt->rc.ch3 + follow_pid_output + rc_data_pt->rc.ch0 / 2.9f;
+                motor_speed[2] = -rc_data_pt->rc.ch2 + rc_data_pt->rc.ch3 + follow_pid_output + rc_data_pt->rc.ch0 / 2.9f;
+                motor_speed[3] = -rc_data_pt->rc.ch2 - rc_data_pt->rc.ch3 + follow_pid_output + rc_data_pt->rc.ch0 / 2.9f;
 
-                chassis_motor_speed[0] *= motor_speed_multiple;
-                chassis_motor_speed[1] *= motor_speed_multiple;
-                chassis_motor_speed[2] *= motor_speed_multiple;
-                chassis_motor_speed[3] *= motor_speed_multiple;
+                motor_speed[0] *= 8.5f;
+                motor_speed[1] *= 8.5f;
+                motor_speed[2] *= 8.5f;
+                motor_speed[3] *= 8.5f;
+
                 break;
             }
 
-            case rc_chassis_gyro_mode_ENUM: ///< 2£»µ×ÅÌÐ¡ÍÓÂÝ+ÊÖ¶¯Ãé×¼
+            //µ×ÅÌÐ¡ÍÓÂÝ
+            case 2:
+            case 4:
             {
-                /* Ð¡ÍÓÂÝµ×ÅÌÂß¼­¹²ÓÃ */
-            }
-            case rc_stable_chassis_gyro_mode_ENUM: ///< 4£ºµ×ÅÌÐ¡ÍÓÂÝ+×ÔÎÈÔÆÌ¨
-            {
-                Calc_Gyro_Motors_Speed(chassis_motor_speed,
-                                       Calc_Gyro_Speed_By_Power_Limit(referee_date_pt->power_heat_data.chassis_power),
+                Calc_Gyro_Motors_Speed(motor_speed,
+                                       Calc_Gyro_Speed_By_Power_Limit(referee_date_pt->game_robot_status.chassis_power_limit),
                                        GM6020_YAW_Angle_To_360(gimbal_motor_feedback_parsed_data[*yaw_motor_index].mechanical_angle),
                                        rc_data_pt->rc.ch3 * 8.0f,
                                        rc_data_pt->rc.ch2 * 8.0f);
                 break;
             }
 
-            case rc_special_mode_ENUM: ///< 5£ºÌØÊâÄ£Ê½
-
+            //ÌØÊâ
+            case 5:
             {
-                Calc_Gyro_Motors_Speed(chassis_motor_speed,
+                Calc_Gyro_Motors_Speed(motor_speed,
                                        0,
                                        GM6020_YAW_Angle_To_360(gimbal_motor_feedback_parsed_data[*yaw_motor_index].mechanical_angle),
                                        rc_data_pt->rc.ch3 * 10.0f,
                                        rc_data_pt->rc.ch2 * 10.0f);
-
-                break;
-            }
-
-            default:
-            {
                 break;
             }
             }
         }
         /* ¶î¶¨×ªËÙ 469rpm,¼õËÙÏä¼õËÙ±ÈÔ¼Îª19:1 */
         /* µ÷ÊÔ½×¶ÎËÙ¶ÈÏÞ·ù´Ó8899¸Ä³É889 */
-        OUTPUT_LIMIT(&chassis_motor_speed[0], 8899);
-        OUTPUT_LIMIT(&chassis_motor_speed[1], 8899);
-        OUTPUT_LIMIT(&chassis_motor_speed[2], 8899);
-        OUTPUT_LIMIT(&chassis_motor_speed[3], 8899);
+        OUTPUT_LIMIT(&motor_speed[0], 8899);
+        OUTPUT_LIMIT(&motor_speed[1], 8899);
+        OUTPUT_LIMIT(&motor_speed[2], 8899);
+        OUTPUT_LIMIT(&motor_speed[3], 8899);
 
 //µ×ÅÌ¹Ø±Õºê¶¨Òå£¬ÔÚconfig.h
 #if CHASSIS_SPEED_ZERO
-        chassis_motor_speed[0] = 0;
-        chassis_motor_speed[1] = 0;
-        chassis_motor_speed[2] = 0;
-        chassis_motor_speed[3] = 0;
+        motor_speed[0] = 0;
+        motor_speed[1] = 0;
+        motor_speed[2] = 0;
+        motor_speed[3] = 0;
 #endif
         /**
  * @brief   µ×ÅÌËÙ¶ÈPID»·¼ÆËãÒÔ¼°ÉèÖÃµ×ÅÌËÙ¶È
   */
-        Set_ChassisMotor_Speed(chassis_motor_speed[0],
-                               chassis_motor_speed[1],
-                               chassis_motor_speed[2],
-                               chassis_motor_speed[3],
+        Set_ChassisMotor_Speed(motor_speed[0],
+                               motor_speed[1],
+                               motor_speed[2],
+                               motor_speed[3],
                                chassis_motor_feedback_parsed_data);
-        osDelay(10);
+        osDelay(5);
     }
 }
 void Chassis_Init(void)
@@ -204,7 +191,7 @@ void Chassis_Init(void)
     can1_rx_header = Get_CAN1_Rx_Header(); ///< ·µ»Ø CAN1 ½ÓÊÕÊý¾ÝÍ·½á¹¹ÌåÖ¸Õë
 
     Can1_Filter_Init();                                                    ///< CAN1µ×²ã³õÊ¼»¯
-    referee_date_pt = Get_Judge_Data();                                  ///< ½âÎöºóµÄ²ÃÅÐÏµÍ³Êý¾Ý
+    referee_date_pt = Get_Judge_Data();                                    ///< ½âÎöºóµÄ²ÃÅÐÏµÍ³Êý¾Ý
     rc_data_pt = Get_Rc_Parsed_RemoteData_Pointer();                       // »ñÈ¡½âÎöºóµÄÒ£¿ØÆ÷Êý¾Ý
     robot_mode_data_pt = Get_Parsed_RobotMode_Pointer();                   //»úÆ÷ÈËÄ£Ê½½á¹¹ÌåÖ¸Õë
     chassis_motor_feedback_parsed_data = Get_Can1_Feedback_Data();         // CAN1 ×ÜÏßÉÏµç»úµÄ·´À¡Êý¾Ý
@@ -289,7 +276,8 @@ float Calc_Chassis_Follow(void)
 
     float follow_tar = YAW_INIT_ANGLE;
     float follow_cur = gimbal_motor_feedback_parsed_data[*yaw_motor_index].mechanical_angle;
-
+    float pitchoutpu1t = gimbal_motor_feedback_parsed_data[1].mechanical_angle;
+    //debug_print("%.2f\r\n",pitchoutpu1t);
     Handle_Angle8191_PID_Over_Zero(&follow_tar, &follow_cur);
 
     return -(Pid_Position_Calc(&chassis_follow_pid, follow_tar, follow_cur));
@@ -338,78 +326,4 @@ const uint8_t *Get_Can1_Motor_DeviceNumber(void)
 void Info_Can1_ParseData_Task(void)
 {
     Parse_Can1_Rxd_Data();
-}
-
-/**
-  * @brief          ÏÞÖÆ¹¦ÂÊ£¬Ö÷ÒªÏÞÖÆµç»úµçÁ÷
-  * @param[in]      chassis_power_control: µ×ÅÌÊý¾Ý
-  * @retval         none
-  */
-void chassis_power_control(int16_t *chassis_motor1, int16_t *chassis_motor2, int16_t *chassis_motor3, int16_t *chassis_motor4)
-{
-    fp32 chassis_power = 0.0f;
-    fp32 chassis_power_buffer = 0.0f;
-    fp32 total_current_limit = 0.0f;
-    fp32 total_current = 0.0f;
-
-    chassis_power = referee_date_pt->power_heat_data.chassis_power;
-    chassis_power_buffer = referee_date_pt->power_heat_data.chassis_power_buffer;
-    // power > 80w and buffer < 60j, because buffer < 60 means power has been more than 80w
-    //¹¦ÂÊ³¬¹ý80w ºÍ»º³åÄÜÁ¿Ð¡ÓÚ60j,ÒòÎª»º³åÄÜÁ¿Ð¡ÓÚ60ÒâÎ¶×Å¹¦ÂÊ³¬¹ý80w
-    if (chassis_power_buffer < WARNING_POWER_BUFF)
-    {
-        fp32 power_scale;
-        if (chassis_power_buffer > 5.0f)
-        {
-            //ËõÐ¡WARNING_POWER_BUFF
-            power_scale = chassis_power_buffer / WARNING_POWER_BUFF;
-        }
-        else
-        {
-            //only left 10% of WARNING_POWER_BUFF
-            power_scale = 5.0f / WARNING_POWER_BUFF;
-        }
-        //ËõÐ¡
-        total_current_limit = BUFFER_TOTAL_CURRENT_LIMIT * power_scale;
-    }
-    else
-    {
-        //¹¦ÂÊ´óÓÚWARNING_POWER
-        if (chassis_power > WARNING_POWER)
-        {
-            fp32 power_scale;
-            //¹¦ÂÊÐ¡ÓÚ80w
-            if (chassis_power < POWER_LIMIT)
-            {
-                //ËõÐ¡
-                power_scale = (POWER_LIMIT - chassis_power) / (POWER_LIMIT - WARNING_POWER);
-            }
-            //¹¦ÂÊ´óÓÚ80w
-            else
-            {
-                power_scale = 0.0f;
-            }
-
-            total_current_limit = BUFFER_TOTAL_CURRENT_LIMIT + POWER_TOTAL_CURRENT_LIMIT * power_scale;
-        }
-        //¹¦ÂÊÐ¡ÓÚWARNING_POWER
-        else
-        {
-            total_current_limit = BUFFER_TOTAL_CURRENT_LIMIT + POWER_TOTAL_CURRENT_LIMIT;
-        }
-        // }
-    }
-
-    total_current = 0.0f;
-    //¼ÆËãÔ­±¾µç»úµçÁ÷Éè¶¨
-    total_current += fabs(*chassis_motor1) + fabs(*chassis_motor2) + fabs(*chassis_motor3) + fabs(*chassis_motor4);
-
-    if (total_current > total_current_limit)
-    {
-        fp32 current_scale = total_current_limit / total_current;
-        *chassis_motor1 *= current_scale;
-        *chassis_motor2 *= current_scale;
-        *chassis_motor3 *= current_scale;
-        *chassis_motor4 *= current_scale;
-    }
 }

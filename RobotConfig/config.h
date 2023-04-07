@@ -19,14 +19,14 @@
 
 /* 机器人属性参数 */
 /* Yaw */
-#define YAW_GM6020_HEAD_ANGLE 3328 ///< 维修之后角度会变    2468
+#define YAW_GM6020_HEAD_ANGLE 5658 ///< 维修之后角度会变    2468
 #define YAW_LIMIT_SPEED 150        ///<YAW轴速度限幅 
 
 /* PID */
 
 /* 调试模式 */
-#define INFORMATION 1
-#define DEBUG 1           ///< debug_printf()函数使能
+#define INFORMATION 0
+#define DEBUG 0           ///< debug_printf()函数使能
 #define ERROE_FOR_SHELL 0 ///<文件错误信息输出开关（暂未完成）
 
 /* 添加机器人返回数据函数定义列表 */
