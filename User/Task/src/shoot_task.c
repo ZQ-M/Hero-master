@@ -109,6 +109,10 @@ void StartShootTask(void const *argument)
         {
             osSignalSet(waveWheelTaskHandle, fire_one_bullet);
         }
+        if (Updata_Wave_Mouse_Value(&last_wave_ch_value, &this_wave_ch_value))
+        {
+            osSignalSet(waveWheelTaskHandle, fire_one_bullet);
+        }
 
         Set_Friction_Motor_Speed(-fric_speed, fric_speed, friction_motor_feedback_data); ///< 摩擦轮速度PID计算以及设置摩擦轮速度
         // float motor_date1 = 0;
@@ -201,6 +205,24 @@ int8_t Updata_Wave_Ch_Value(int16_t *last_wave_ch_value, int16_t *this_wave_ch_v
     *this_wave_ch_value = rc_data_pt->rc.ch4;
 
     if ((*this_wave_ch_value == 660) && (*last_wave_ch_value != 660))
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+/**
+ *@brief    判断鼠标发射开关是否被按下
+ *@retval   1:是    2：否
+ *   */
+int8_t Updata_Wave_Mouse_Value(int16_t *last_wave_ch_value, int16_t *this_wave_ch_value)
+{
+    *last_wave_ch_value = *this_wave_ch_value;
+    *this_wave_ch_value = rc_data_pt->mouse.press_l;
+
+    if ((*this_wave_ch_value == 1) && (*last_wave_ch_value != 0))
     {
         return 1;
     }

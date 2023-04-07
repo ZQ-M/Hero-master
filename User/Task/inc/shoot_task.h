@@ -46,6 +46,7 @@ typedef struct
 
 void Parse_Friction_Wave_Motor_Feedback_Data(CAN_RxHeaderTypeDef *p_can_rx_header,uint8_t *can2_rxd_data_buffer);
 int8_t Updata_Wave_Ch_Value(int16_t *last_wave_ch_value,int16_t *this_wave_ch_value);
+int8_t Updata_Wave_Mouse_Value(int16_t *last_wave_ch_value,int16_t *this_wave_ch_value);
 void Emission_Once_Time(void);
 int8_t *Get_Is_OK_Fire(void);
 const int32_t* Get_Fire_One_Bullet_Signal(void);
