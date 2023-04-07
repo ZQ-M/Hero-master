@@ -24,15 +24,16 @@ void StartMonitorTask(void const *argument)
 	{
 		Monitor_All_Modules();
 
-		if (cap_send_cnt > 2)
+		if (cap_send_cnt > 3)
 		{
 			/* 功率限制 */
 			if (module_status[judge_system].time_out_flag == 0 && module_status[super_capacitor].time_out_flag == 0) //判断裁判系统、底盘是否同时上线
 			{
 				//判断超级电容目标功率与裁判系统限制功率-2是否相符，否设置超级电容
-				if(referee_date_pt->power_heat_data.chassis_power - 2!= (uint8_t)super_capacitor_date->target_power);
+				if((referee_date_pt->ext_game_robot_status_t.chassis_power_limit - 2) != ((uint16_t)(super_capacitor_date->target_power)));
 				{
-					Set_Super_Capacitor((referee_date_pt->power_heat_data.chassis_power - 2) * 100);
+					// debug_print("xxxxxxxxxxxxxxxxx %d %d\r\n", referee_date_pt->ext_game_robot_status_t.chassis_power_limit, (uint16_t)super_capacitor_date->target_power);
+					Set_Super_Capacitor((referee_date_pt->ext_game_robot_status_t.chassis_power_limit - 2) * 100);
 					cap_send_cnt = 0;
 				}
 			}

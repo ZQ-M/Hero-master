@@ -6,7 +6,7 @@
 Pid_Position_t motor_yaw_angle_pid = NEW_POSITION_PID(1.5, 0, 0, 15.56, 60, 0, 3000, 500);			  ///< yaw电机角度PID
 static Pid_Position_t motor_yaw_speed_pid = NEW_POSITION_PID(350, 1.5, 1.5, 10, 30000, 0, 1000, 500); ///< yaw电机速度PID
 
-static Pid_Position_t motor_pitch_speed_pid = NEW_POSITION_PID(180, 2.5, 1.5, 2000, 15000, 0, 1000, 500); ///< pitch电机速度PID
+static Pid_Position_t motor_pitch_speed_pid = NEW_POSITION_PID(380, 27, 0, 220, 30000, 0, 1000, 500); ///< pitch电机速度PID
 static Pid_Position_t motor_pitch_angle_pid = NEW_POSITION_PID(0.03, 0.02, 0.00, 100, 50, 0, 3000, 500); ///< pitch电机角度PID
 
 static Pid_Position_t friction_motor_left_speed_pid = NEW_POSITION_PID(13, 0, 0.7, 2000, 16383, 0, 1000, 500);
