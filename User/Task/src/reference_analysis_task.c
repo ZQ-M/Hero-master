@@ -16,6 +16,7 @@ void StartReferenceTaskTask(void const *argument)
     reference_system_rxd_buffer[0] = Get_Uart8_DMA_RxBuffer_One(); ///< 指向双缓冲区域
     reference_system_rxd_buffer[1] = Get_Uart8_DMA_RxBuffer_Two(); ///< 指向双缓冲区域
     juder_date_finish = Get_Judge_Data();                          ///< 指向解析后的数据
+    Judge_System_Connect_List_Init();
     osDelay(100);
     for (;;)
     {

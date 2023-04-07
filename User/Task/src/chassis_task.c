@@ -173,14 +173,25 @@ void StartChassisTask(void const *argument)
         motor_speed[2] = 0;
         motor_speed[3] = 0;
 #endif
+
+        // uint8_t ATEST = Get_Judge_Data()->ext_game_robot_status_t.mains_power_chassis_output;
+        // debug_print("%d\r\n",ATEST);
         /**
- * @brief   底盘速度PID环计算以及设置底盘速度
-  */
-        Set_ChassisMotor_Speed(motor_speed[0],
-                               motor_speed[1],
-                               motor_speed[2],
-                               motor_speed[3],
-                               chassis_motor_feedback_parsed_data);
+        * @brief   底盘速度PID环计算以及设置底盘速度
+        */
+        /* 底盘上电判断 */
+        if (Get_Judge_Data()->ext_game_robot_status_t.mains_power_chassis_output == 1)
+        {
+            Set_ChassisMotor_Speed(motor_speed[0],
+                                   motor_speed[1],
+                                   motor_speed[2],
+                                   motor_speed[3],
+                                   chassis_motor_feedback_parsed_data);
+        }
+        else
+        {
+        Can1_Send_4Msg(CAN_CHASSIS_ALL_ID,0,0,0,0);
+        }
         osDelay(5);
     }
 }
