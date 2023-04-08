@@ -46,7 +46,7 @@ void StartShootTask(void const *argument)
 
     shooter_init();
     shoot_init();
-    Laser_OFF();
+
     (void)rc_data_pt; ///< ±ÜÃâ warning
     (void)judge_data;
     (void)last_machine_angle;

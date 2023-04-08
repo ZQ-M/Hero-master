@@ -33,6 +33,9 @@ void Can1_Rx_FIFO0_IT_Callback(void)
 	Can1_Process(&can1_rx_header);
 }
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 /**
  * @brief                             CAN1 发送数据函数
  * @param[in] {uint32_t}_id           发送目标在 CAN 总线上的 ID
@@ -61,7 +64,9 @@ void Can1_Send_4Msg(uint32_t id, int16_t data1, int16_t data2, int16_t data3, in
 	can_tx_msg[7] = data4;
 
 	///< use HAL function send
+	taskENTER_CRITICAL();
 	HAL_CAN_AddTxMessage(&hcan1, &can_tx_msg_format, can_tx_msg, &send_mail_box);
+	taskEXIT_CRITICAL();
 }
 
 /**

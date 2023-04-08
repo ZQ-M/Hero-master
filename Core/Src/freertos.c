@@ -219,7 +219,7 @@ void MX_FREERTOS_Init(void) {
   buzzerTaskHandle = osThreadCreate(osThread(buzzerTask), NULL);
 
   /* definition and creation of shootTask */
-  osThreadStaticDef(shootTask, StartShootTask, osPriorityNormal, 0, 512, shootTaskBuffer, &shootTaskControlBlock);
+  osThreadStaticDef(shootTask, StartShootTask, osPriorityAboveNormal, 0, 512, shootTaskBuffer, &shootTaskControlBlock);
   shootTaskHandle = osThreadCreate(osThread(shootTask), NULL);
 
   /* definition and creation of gyroscopeTask */

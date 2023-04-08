@@ -22,6 +22,8 @@ void Can2_Filter_Init(void)
 	HAL_CAN_Start(&hcan2);
 }
 
+#include "FreeRTOS.h"
+#include "task.h"
 void Can2_Send_4Msg(uint32_t id, int16_t data1, int16_t data2, int16_t data3, int16_t data4)
 {
     static CAN_TxHeaderTypeDef can_tx_msg_format;
@@ -41,6 +43,8 @@ void Can2_Send_4Msg(uint32_t id, int16_t data1, int16_t data2, int16_t data3, in
 	can_tx_msg[7] = data4;
 
 	///< use HAL function send
+	// taskENTER_CRITICAL();
+	taskENTER_CRITICAL();
 	HAL_CAN_AddTxMessage(&hcan2, &can_tx_msg_format, can_tx_msg, &send_mail_box);
-
+	taskEXIT_CRITICAL();
 }
