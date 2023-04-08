@@ -2,12 +2,16 @@
 #include "gimbal_task.h"
 #include "monitor_task.h"
 #include "shoot_task.h"
+#include "user_commands.h"
 
-Pid_Position_t motor_yaw_angle_pid = NEW_POSITION_PID(1.5, 0, 0, 15.56, 60, 0, 3000, 500);			  ///< yaw电机角度PID
-static Pid_Position_t motor_yaw_speed_pid = NEW_POSITION_PID(350, 1.5, 1.5, 10, 30000, 0, 1000, 500); ///< yaw电机速度PID
+extern float easy_pid_p, easy_pid_i, easy_pid_d;
+extern float easy_pid2_p, easy_pid2_i, easy_pid2_d;
 
-static Pid_Position_t motor_pitch_speed_pid = NEW_POSITION_PID(380, 27, 0, 220, 30000, 0, 1000, 500); ///< pitch电机速度PID
-static Pid_Position_t motor_pitch_angle_pid = NEW_POSITION_PID(0.03, 0.02, 0.00, 100, 50, 0, 3000, 500); ///< pitch电机角度PID
+Pid_Position_t motor_yaw_angle_pid = NEW_POSITION_PID(1.8, 0.2, 0, 15.56, 60, 0, 3000, 500);			  ///< yaw电机角度PID
+static Pid_Position_t motor_yaw_speed_pid = NEW_POSITION_PID(800, 0.5, 0.001, 10, 30000, 0, 1000, 500); ///< yaw电机速度PID
+
+static Pid_Position_t motor_pitch_speed_pid = NEW_POSITION_PID(650, 0.1, 0.000001, 220, 30000, 0, 1000, 500); ///< pitch电机速度PID
+static Pid_Position_t motor_pitch_angle_pid = NEW_POSITION_PID(0.35, 0.01, 0.00, 100, 50, 0, 3000, 500); ///< pitch电机角度PID
 
 static Pid_Position_t friction_motor_left_speed_pid = NEW_POSITION_PID(13, 0, 0.7, 2000, 16383, 0, 1000, 500);
 static Pid_Position_t friction_motor_right_speed_pid = NEW_POSITION_PID(13, 0, 0.7, 2000, 16383, 0, 1000, 500);
@@ -169,6 +173,9 @@ Motor_Measure_t *Get_Wave_Motor_Paresed_Data(void)
  */
 void Set_Gimbal_Motors_Speed(float yaw_speed, float pitch_speed, float yaw_speed_rpm, float pitch_speed_rpm)
 {
+	// motor_pitch_speed_pid.kp = easy_pid_p;
+	// motor_pitch_speed_pid.ki = easy_pid_i;
+	// motor_pitch_speed_pid.kd = easy_pid_d;
 	Can2_Send_4Msg(
 		CAN_GIMBAL_ALL_ID,
 		Pid_Position_Calc(&motor_yaw_speed_pid, yaw_speed, yaw_speed_rpm),
@@ -227,6 +234,11 @@ float Calc_Pitch_Angle8191_Pid(float tar_angle, Motor_Measure_t *pitch_motor_par
 {
 	float pitch_tar_angle = tar_angle;
 	float pitch_cur_angle = pitch_motor_parsed_feedback_data->mechanical_angle;
+
+	// motor_pitch_angle_pid.kp = easy_pid2_p;
+	// motor_pitch_angle_pid.ki = easy_pid2_i;
+	// motor_pitch_angle_pid.kd = easy_pid2_d;
+
 	Handle_Angle8191_PID_Over_Zero(&pitch_tar_angle, &pitch_cur_angle);
 	return Pid_Position_Calc(&motor_pitch_angle_pid, pitch_tar_angle, pitch_cur_angle); ///< 这是第一层 PID，计算设定角度与实际角度之间的误差，得到下一步要设定的速度值，如果已经达到目标值，则输出为 0
 }
