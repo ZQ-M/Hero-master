@@ -348,7 +348,7 @@ static void Switch_Mouse_Key_Change(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data,
 		robot_control_data->mode.mouse_keyboard_gimbal_mode = 1;
 	}
 
-	//弹舱模式 R （开关弹舱盖）
+	//摩擦轮高速模式 R 
 	if (KEY_CLICKED(KEY_R))
 	{
 		if (robot_control_data->mode.fric_cover_mode == cover_on_ENUM)
@@ -363,7 +363,7 @@ static void Switch_Mouse_Key_Change(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data,
 		}
 	}
 
-	//摩擦轮模式 E
+	//摩擦轮低速模式 E
 	if (KEY_CLICKED(KEY_E))
 	{
 		if (robot_control_data->mode.fric_cover_mode == fric_adaptive_speed_mode_ENUM)

@@ -6,9 +6,9 @@ static const uint8_t gimbal_motor_num = 2;  ///< 云台电机的数量
 static const uint8_t yaw_motor_index = 0;   ///< yaw 轴电机在电机数据结构体中的下标
 static const uint8_t pitch_motor_index = 1; ///< pitch 轴电机在电机数据结构体中的下标
 /* Pitch角度限幅 */
-static const uint16_t pitch_up_angle_limit = 7428;   ///< pitch 轴云台最低角度
-static const uint16_t pitch_middle_angle = 7184;     ///< pitch 轴云台中间角度
-static const uint16_t pitch_down_angle_limit = 6684; ///< pitch 轴云台最高角度
+static const uint16_t pitch_up_angle_limit = 4630;   ///< pitch 轴云台最低角度
+static const uint16_t pitch_middle_angle = 4312;     ///< pitch 轴云台中间角度
+static const uint16_t pitch_down_angle_limit = 3994; ///< pitch 轴云台最高角度
 /* Restart角度 */
 static float yaw_angle_set = 0;                    ///< 这里初始角是0，因为在chassis_task.c中，对于跟随根据初始机械角度进行了处理
 static float pitch_angle_set = pitch_middle_angle; ///< pitch 轴云台设置的角度
