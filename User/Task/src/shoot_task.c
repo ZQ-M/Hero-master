@@ -46,7 +46,7 @@ void StartShootTask(void const *argument)
 
     shooter_init();
     shoot_init();
-
+    Laser_OFF();
     (void)rc_data_pt; ///< ±ÜÃâ warning
     (void)judge_data;
     (void)last_machine_angle;
@@ -67,6 +67,7 @@ void StartShootTask(void const *argument)
         {
             fric_speed = 0;
             is_ok_fire = 0;
+            Laser_OFF();
             break;
         }
 
@@ -75,6 +76,7 @@ void StartShootTask(void const *argument)
         {
             fric_speed = 4500;
             is_ok_fire = 1;
+            Laser_ON();
             break;
         }
 
@@ -83,6 +85,7 @@ void StartShootTask(void const *argument)
         {
             fric_speed = 4900;
             is_ok_fire = 1;
+            Laser_ON();
             break;
         }
 
@@ -91,7 +94,7 @@ void StartShootTask(void const *argument)
         {
             fric_speed = 7000;
             is_ok_fire = 1;
-
+            Laser_ON();
             break;
         }
 

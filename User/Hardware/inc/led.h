@@ -8,7 +8,8 @@
 #define LED_RED_OFF()    GPIOE->BSRR = LL_GPIO_PIN_11
 #define LED_RED_TOGGLE() GPIOE->ODR ^= LL_GPIO_PIN_11
 
-#define Laser_ON()       GPIOG->BSRR = LL_GPIO_PIN_13///<打开激光
+#define Laser_ON()       LL_GPIO_SetOutputPin(GPIOG, LL_GPIO_PIN_13)///<打开激光
+#define Laser_OFF()      LL_GPIO_ResetOutputPin(GPIOG, LL_GPIO_PIN_13)///<关闭激光
 
 #define LED_GREEN_ON()     GPIOF->BSRR = LL_GPIO_PIN_14 << 16
 #define LED_GREEN_OFF()    GPIOF->BSRR = LL_GPIO_PIN_14

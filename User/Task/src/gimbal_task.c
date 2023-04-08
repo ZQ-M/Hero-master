@@ -32,9 +32,6 @@ void StartGimbalTask(void const *argument)
     osDelay(1000);
     for (;;)
     {
-        ///< 板放置上云台除Yaw轴其他两轴数据稳定数据稳定
-        //< 所有的调试打印全部采用debug.printf()，在usart3.h中的宏定义控制条件编译，关闭宏之后debug_printf指向空宏
-
         /*选择操作设备*/
         if (robot_mode_data_pt->mode.control_device == remote_controller_device_ENUM) ///<遥控器模式
         {
