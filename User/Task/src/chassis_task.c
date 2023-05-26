@@ -176,12 +176,13 @@ void StartChassisTask(void const *argument)
 
         // uint8_t ATEST = Get_Judge_Data()->ext_game_robot_status_t.mains_power_chassis_output;
         // debug_print("%d\r\n",ATEST);
-        /**
-        * @brief   底盘速度PID环计算以及设置底盘速度
-        */
+
         /* 底盘上电判断 */
         if (Get_Judge_Data()->ext_game_robot_status_t.mains_power_chassis_output == 1)
         {
+            /**
+            * @brief   底盘速度PID环计算以及设置底盘速度
+            */
             Set_ChassisMotor_Speed(motor_speed[0],
                                    motor_speed[1],
                                    motor_speed[2],

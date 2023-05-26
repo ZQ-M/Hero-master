@@ -64,9 +64,7 @@ void Can1_Send_4Msg(uint32_t id, int16_t data1, int16_t data2, int16_t data3, in
 	can_tx_msg[7] = data4;
 
 	///< use HAL function send
-	taskENTER_CRITICAL();
 	HAL_CAN_AddTxMessage(&hcan1, &can_tx_msg_format, can_tx_msg, &send_mail_box);
-	taskEXIT_CRITICAL();
 }
 
 /**

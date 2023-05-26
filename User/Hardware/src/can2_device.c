@@ -3,6 +3,7 @@
 #include "monitor_task.h"
 #include "shoot_task.h"
 #include "user_commands.h"
+#include "cansend_task.h"
 
 extern float easy_pid_p, easy_pid_i, easy_pid_d;
 extern float easy_pid2_p, easy_pid2_i, easy_pid2_d;
@@ -176,7 +177,7 @@ void Set_Gimbal_Motors_Speed(float yaw_speed, float pitch_speed, float yaw_speed
 	// motor_pitch_speed_pid.kp = easy_pid_p;
 	// motor_pitch_speed_pid.ki = easy_pid_i;
 	// motor_pitch_speed_pid.kd = easy_pid_d;
-	Can2_Send_4Msg(
+	Can_Send(2,
 		CAN_GIMBAL_ALL_ID,
 		Pid_Position_Calc(&motor_yaw_speed_pid, yaw_speed, yaw_speed_rpm),
 		Pid_Position_Calc(&motor_pitch_speed_pid, pitch_speed, pitch_speed_rpm),
@@ -261,7 +262,7 @@ void Set_Friction_Motor_Speed(float speed_left, float speed_right, Motor_Measure
 {
 	int16_t left = Pid_Position_Calc(&friction_motor_left_speed_pid, speed_left, friction_motor_feedback_data[0].speed_rpm);
 	int16_t right = Pid_Position_Calc(&friction_motor_right_speed_pid, speed_right, friction_motor_feedback_data[1].speed_rpm);
-	Can2_Send_4Msg(
+	Can_Send(2,
 		CAN_SHOOTER_ALL_ID,
 		left,
 		right,
@@ -272,7 +273,7 @@ void Set_Friction_Motor_Speed(float speed_left, float speed_right, Motor_Measure
 void Set_Wave_Motor_Speed(float wave_motor_speed, Motor_Measure_t *wave_motor_feedback_data)
 {
 	int16_t wave_motor_pid_out_speed = Pid_Position_Calc(&wave_motor_speed_pid, wave_motor_speed, wave_motor_feedback_data->speed_rpm);
-	Can2_Send_4Msg(
+	Can_Send(2,
 		0x1FF,
 		0,
 		wave_motor_pid_out_speed,
