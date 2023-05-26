@@ -192,7 +192,7 @@ void StartGimbalTask(void const *argument)
             gimbal_motor_parsed_feedback_data[yaw_motor_index].speed_rpm,
             gimbal_motor_parsed_feedback_data[pitch_motor_index].speed_rpm);
 
-        osDelay(20);
+        osDelay(19);
     }
 }
 
