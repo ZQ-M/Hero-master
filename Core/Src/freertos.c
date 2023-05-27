@@ -20,9 +20,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
-#include "cmsis_os.h"
-#include "main.h"
 #include "task.h"
+#include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -49,37 +49,37 @@
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
-uint32_t defaultTaskBuffer[512];
+uint32_t defaultTaskBuffer[ 512 ];
 osStaticThreadDef_t defaultTaskControlBlock;
 osThreadId shellTaskHandle;
-uint32_t shellTaskBuffer[1024];
+uint32_t shellTaskBuffer[ 1024 ];
 osStaticThreadDef_t shellTaskControlBlock;
 osThreadId remoteTaskHandle;
-uint32_t remoteTaskBuffer[512];
+uint32_t remoteTaskBuffer[ 512 ];
 osStaticThreadDef_t remoteTaskControlBlock;
 osThreadId monitorTaskHandle;
-uint32_t monitorTaskBuffer[512];
+uint32_t monitorTaskBuffer[ 512 ];
 osStaticThreadDef_t monitorTaskControlBlock;
 osThreadId chassisTaskHandle;
-uint32_t chassisTaskBuffer[512];
+uint32_t chassisTaskBuffer[ 512 ];
 osStaticThreadDef_t chassisTaskControlBlock;
-/* osThreadId parseCan1RxDataHandle;
-uint32_t parseCanRxDataTBuffer[ 512 ]; */
+osThreadId parseCan1RxDataHandle;
+uint32_t parseCanRxDataTBuffer[ 512 ];
 osStaticThreadDef_t parseCanRxDataTControlBlock;
 osThreadId gimbalTaskHandle;
-uint32_t gimbalTaskBuffer[512];
+uint32_t gimbalTaskBuffer[ 512 ];
 osStaticThreadDef_t gimbalTaskControlBlock;
 osThreadId buzzerTaskHandle;
-uint32_t buzzerTaskBuffer[128];
+uint32_t buzzerTaskBuffer[ 128 ];
 osStaticThreadDef_t buzzerTaskControlBlock;
 osThreadId shootTaskHandle;
-uint32_t shootTaskBuffer[512];
+uint32_t shootTaskBuffer[ 512 ];
 osStaticThreadDef_t shootTaskControlBlock;
 osThreadId gyroscopeTaskHandle;
-uint32_t gyroscopeTaskBuffer[512];
+uint32_t gyroscopeTaskBuffer[ 512 ];
 osStaticThreadDef_t gyroscopeTaskControlBlock;
 osThreadId waveWheelTaskHandle;
-uint32_t waveWheelTaskBuffer[512];
+uint32_t waveWheelTaskBuffer[ 512 ];
 osStaticThreadDef_t waveWheelTaskControlBlock;
 osThreadId superCapacitorTHandle;
 uint32_t superCapacitorTBuffer[ 512 ];
@@ -96,6 +96,9 @@ osStaticThreadDef_t referenceGyroscControlBlock;
 osThreadId clientUiTaskHandle;
 uint32_t clientUiTaskBuffer[ 512 ];
 osStaticThreadDef_t clientUiTaskControlBlock;
+osThreadId cansendTaskHandle;
+uint32_t cansendTaskBuffer[ 512 ];
+osStaticThreadDef_t cansendTaskControlBlock;
 osMessageQId buzzerQueueHandle;
 uint8_t buzzerQueueBuffer[ 5 * 5 ];
 osStaticMessageQDef_t buzzerQueueControlBlock;
@@ -126,6 +129,7 @@ void StartRefereeSystemTask(void const * argument);
 void StartReferenceTaskTask(void const * argument);
 void StartextErnalGyroscopeParseTask(void const * argument);
 void StartClientUiTask(void const * argument);
+void StartCanSendTask(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -210,6 +214,10 @@ void MX_FREERTOS_Init(void) {
   osThreadStaticDef(chassisTask, StartChassisTask, osPriorityAboveNormal, 0, 512, chassisTaskBuffer, &chassisTaskControlBlock);
   chassisTaskHandle = osThreadCreate(osThread(chassisTask), NULL);
 
+  /* definition and creation of parseCan1RxData */
+  osThreadStaticDef(parseCan1RxData, StartParseCan1RxDataTask, osPriorityAboveNormal, 0, 512, parseCanRxDataTBuffer, &parseCanRxDataTControlBlock);
+  parseCan1RxDataHandle = osThreadCreate(osThread(parseCan1RxData), NULL);
+
   /* definition and creation of gimbalTask */
   osThreadStaticDef(gimbalTask, StartGimbalTask, osPriorityAboveNormal, 0, 512, gimbalTaskBuffer, &gimbalTaskControlBlock);
   gimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
@@ -219,7 +227,7 @@ void MX_FREERTOS_Init(void) {
   buzzerTaskHandle = osThreadCreate(osThread(buzzerTask), NULL);
 
   /* definition and creation of shootTask */
-  osThreadStaticDef(shootTask, StartShootTask, osPriorityAboveNormal, 0, 512, shootTaskBuffer, &shootTaskControlBlock);
+  osThreadStaticDef(shootTask, StartShootTask, osPriorityNormal, 0, 512, shootTaskBuffer, &shootTaskControlBlock);
   shootTaskHandle = osThreadCreate(osThread(shootTask), NULL);
 
   /* definition and creation of gyroscopeTask */
@@ -234,6 +242,10 @@ void MX_FREERTOS_Init(void) {
   osThreadStaticDef(superCapacitorT, StartSuperCapacitorTask, osPriorityIdle, 0, 512, superCapacitorTBuffer, &superCapacitorTControlBlock);
   superCapacitorTHandle = osThreadCreate(osThread(superCapacitorT), NULL);
 
+  /* definition and creation of refereeSystemTa */
+  osThreadStaticDef(refereeSystemTa, StartRefereeSystemTask, osPriorityIdle, 0, 512, refereeSystemTaBuffer, &refereeSystemTaControlBlock);
+  refereeSystemTaHandle = osThreadCreate(osThread(refereeSystemTa), NULL);
+
   /* definition and creation of ReferenceTask */
   osThreadStaticDef(ReferenceTask, StartReferenceTaskTask, osPriorityIdle, 0, 512, ReferenceTaskBuffer, &ReferenceTaskControlBlock);
   ReferenceTaskHandle = osThreadCreate(osThread(ReferenceTask), NULL);
@@ -245,6 +257,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of clientUiTask */
   osThreadStaticDef(clientUiTask, StartClientUiTask, osPriorityNormal, 0, 512, clientUiTaskBuffer, &clientUiTaskControlBlock);
   clientUiTaskHandle = osThreadCreate(osThread(clientUiTask), NULL);
+
+  /* definition and creation of cansendTask */
+  osThreadStaticDef(cansendTask, StartCanSendTask, osPriorityAboveNormal, 0, 512, cansendTaskBuffer, &cansendTaskControlBlock);
+  cansendTaskHandle = osThreadCreate(osThread(cansendTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -295,7 +311,7 @@ __weak void StartShellTask(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_StartRemoteTask */
-__weak void StartRemoteTask(void const *argument)
+__weak void StartRemoteTask(void const * argument)
 {
   /* USER CODE BEGIN StartRemoteTask */
   /* Infinite loop */
@@ -313,7 +329,7 @@ __weak void StartRemoteTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartMonitorTask */
-__weak void StartMonitorTask(void const *argument)
+__weak void StartMonitorTask(void const * argument)
 {
   /* USER CODE BEGIN StartMonitorTask */
   /* Infinite loop */
@@ -331,7 +347,7 @@ __weak void StartMonitorTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartChassisTask */
-__weak void StartChassisTask(void const *argument)
+__weak void StartChassisTask(void const * argument)
 {
   /* USER CODE BEGIN StartChassisTask */
   /* Infinite loop */
@@ -349,7 +365,7 @@ __weak void StartChassisTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartParseCan1RxDataTask */
-__weak void StartParseCan1RxDataTask(void const *argument)
+__weak void StartParseCan1RxDataTask(void const * argument)
 {
   /* USER CODE BEGIN StartParseCan1RxDataTask */
   /* Infinite loop */
@@ -367,7 +383,7 @@ __weak void StartParseCan1RxDataTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartGimbalTask */
-__weak void StartGimbalTask(void const *argument)
+__weak void StartGimbalTask(void const * argument)
 {
   /* USER CODE BEGIN StartGimbalTask */
   /* Infinite loop */
@@ -385,7 +401,7 @@ __weak void StartGimbalTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartBuzzerTask */
-__weak void StartBuzzerTask(void const *argument)
+__weak void StartBuzzerTask(void const * argument)
 {
   /* USER CODE BEGIN StartBuzzerTask */
   /* Infinite loop */
@@ -403,7 +419,7 @@ __weak void StartBuzzerTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartShootTask */
-__weak void StartShootTask(void const *argument)
+__weak void StartShootTask(void const * argument)
 {
   /* USER CODE BEGIN StartShootTask */
   /* Infinite loop */
@@ -421,7 +437,7 @@ __weak void StartShootTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartGyroscopeTask */
-__weak void StartGyroscopeTask(void const *argument)
+__weak void StartGyroscopeTask(void const * argument)
 {
   /* USER CODE BEGIN StartGyroscopeTask */
   /* Infinite loop */
@@ -439,7 +455,7 @@ __weak void StartGyroscopeTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartWaveWheelTask */
-__weak void StartWaveWheelTask(void const *argument)
+__weak void StartWaveWheelTask(void const * argument)
 {
   /* USER CODE BEGIN StartWaveWheelTask */
   /* Infinite loop */
@@ -457,7 +473,7 @@ __weak void StartWaveWheelTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartSuperCapacitorTask */
-__weak void StartSuperCapacitorTask(void const *argument)
+__weak void StartSuperCapacitorTask(void const * argument)
 {
   /* USER CODE BEGIN StartSuperCapacitorTask */
   /* Infinite loop */
@@ -475,7 +491,7 @@ __weak void StartSuperCapacitorTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartRefereeSystemTask */
-__weak void StartRefereeSystemTask(void const *argument)
+__weak void StartRefereeSystemTask(void const * argument)
 {
   /* USER CODE BEGIN StartRefereeSystemTask */
   /* Infinite loop */
@@ -493,7 +509,7 @@ __weak void StartRefereeSystemTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartReferenceTaskTask */
-__weak void StartReferenceTaskTask(void const *argument)
+__weak void StartReferenceTaskTask(void const * argument)
 {
   /* USER CODE BEGIN StartReferenceTaskTask */
   /* Infinite loop */
@@ -511,7 +527,7 @@ __weak void StartReferenceTaskTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartextErnalGyroscopeParseTask */
-__weak void StartextErnalGyroscopeParseTask(void const *argument)
+__weak void StartextErnalGyroscopeParseTask(void const * argument)
 {
   /* USER CODE BEGIN StartextErnalGyroscopeParseTask */
   /* Infinite loop */
@@ -529,7 +545,7 @@ __weak void StartextErnalGyroscopeParseTask(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartClientUiTask */
-__weak void StartClientUiTask(void const *argument)
+__weak void StartClientUiTask(void const * argument)
 {
   /* USER CODE BEGIN StartClientUiTask */
   /* Infinite loop */
@@ -538,6 +554,24 @@ __weak void StartClientUiTask(void const *argument)
     osDelay(1);
   }
   /* USER CODE END StartClientUiTask */
+}
+
+/* USER CODE BEGIN Header_StartCanSendTask */
+/**
+* @brief Function implementing the cansendTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartCanSendTask */
+__weak void StartCanSendTask(void const * argument)
+{
+  /* USER CODE BEGIN StartCanSendTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartCanSendTask */
 }
 
 /* Private application code --------------------------------------------------*/

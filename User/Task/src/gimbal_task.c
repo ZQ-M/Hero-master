@@ -32,7 +32,7 @@ void StartGimbalTask(void const *argument)
     osDelay(1000);
     for (;;)
     {
-        /*选择操作设备*/
+        /* 选择操作设备 */
         if (robot_mode_data_pt->mode.control_device == remote_controller_device_ENUM) ///<遥控器模式
         {
             // 底盘云台模式: 1底盘跟随 2小陀螺  3垂稳云台 4垂稳+小陀螺 5特殊模式

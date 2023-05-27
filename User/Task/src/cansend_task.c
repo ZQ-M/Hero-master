@@ -16,15 +16,15 @@ typedef struct
 	int16_t data4;
 }Can_send_t;
 
-void Cansend_Task(void *pvParameters)
+void StartCanSendTask(void *pvParameters)
 {
-	//消息队列初始化
+	//消息队列初始化(请注意这里应该是写的不标准的，CUBEMX生成的消息队列与手动加入的队列不同)
 	can_send_queue = xQueueCreate( 3, sizeof( Can_send_t ) );
 	
 	//蜂鸣器播放数据
 	Can_send_t can_send_msg;
 	
-	vTaskDelay(120);
+	osDelay(120);
 	
 	while(1)
 	{
@@ -42,7 +42,7 @@ void Cansend_Task(void *pvParameters)
 		}
 		else
 		{
-			DEBUG_LOG("Can send task error!!!\r\n");
+			debug_print("Can send task error!!!\r\n");
 		}
 		
 	}
