@@ -316,9 +316,9 @@ void Parse_Can1_Rxd_Data(void)
  */
 Motor_Measure_t *Get_Can1_Feedback_Data(void)
 {
-    return m3508_feddback_data;
+    return m3508_feddback_data;//不用加取地址，数组名就是指，而不是定义为结构体。与remote_task.c中不同。
 }
-//不用加取地址，数组名就是指，而不是定义为结构体。与remote_task.c中不同。
+
 /**
  * @brief                     返回 CAN1 总线上电机的数量
  * @param[in]                 void

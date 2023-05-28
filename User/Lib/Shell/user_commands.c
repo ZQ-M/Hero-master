@@ -4,11 +4,29 @@
 extern Shell_command_t shell_cmd_root;
 
 //用户头文件包含
+#include "math2.h"
+#include "monitor_task.h"
+#include "can1_device.h"
+#include "can2_device.h"
+#include "shoot_task.h"
+#include "super_capacitor_task.h"
+#include "externel_gyroscope_task.h"
+//#include "autoaim.h"（希望有一天电控和视觉能开始联调）
 
 //变量定义
+static const Motor_Measure_t* shell_chassis_motor;
+static const Motor_Measure_t* shell_shooter_wave_motor; //波轮电机数据
+static Motor_Measure_t shell_yaw_motor; //云台电机数据
+static const Motor_Measure_t* shell_shooter_fric_motor;
+static const Super_Capacitor_t* super_cap_data;
+static const Wt61c_Data_t* wt61c_data;
+//static const Auto_aim_t* auto_aim_msg;（希望有一天电控和视觉能开始联调）
 
 //函数声明
 static void Module_Status(char * arg);
+static void Motors_Data(char * arg);
+//static void Autoaim_Data(char * arg);
+static void Super_Cap_Data(char * arg);
 static void Gyroscope_Data(char * arg);
 static void Gyro_Reset(char * arg);
 static void Pid_Show(char * arg);
@@ -22,10 +40,19 @@ static void Pid3_Set(char * arg);
 void User_Commands_Init(void)
 {
 	//变量初始化
-
+	shell_chassis_motor = Get_Can1_Feedback_Data();
+	shell_shooter_wave_motor = Get_Wave_Motor_Paresed_Data();
+	shell_yaw_motor = Get_Yaw_Data();
+	shell_shooter_fric_motor = Get_Shooter_Parsed_FeedBack_Data();
+	super_cap_data = Get_SuperCapacitor_Date();
+	wt61c_data = Get_Gyroscope_Data_t();
+	//auto_aim_msg = Get_Auto_Aim_Msg();（希望有一天电控和视觉能开始联调）
+	
 	//用户命令注册
 	Shell_Register_Command("module-status" , Module_Status);
 	Shell_Register_Command("gyroscope-data" , Gyroscope_Data);
+	Shell_Register_Command("motors-data" , Motors_Data);
+	Shell_Register_Command("super-cap-data" , Super_Cap_Data);
 	Shell_Register_Command("gyro-reset" , Gyro_Reset);
 	Shell_Register_Command("pid-show" , Pid_Show);
 	Shell_Register_Command("pid-set" , Pid_Set);
@@ -35,47 +62,89 @@ void User_Commands_Init(void)
 	Shell_Register_Command("pid3-set" , Pid3_Set);
 }
 
-// #define MODULE_STATUS_PRINT(module) {ONLINE_STATUS_PRINT(module);TIMEOUT_PRINT(module);ERROR_PRINT(module);}
-// #define ONLINE_STATUS_PRINT(module) { if(Get_Module_Online_State(module)){shell_print("ON-line\t");}else{shell_print("OFF-line\t");} }
-// #define TIMEOUT_PRINT(module) { shell_print("Cumulative timeout: %.1fs\t", Get_Module_Time_Out_Time_Second(module)); }
-// #define ERROR_PRINT(module) { shell_print("Error time: %d\r\n", Get_Module_Err_Time(module)); }
+
+#define ONLINE_STATUS_PRINT(module) { if(Get_Module_Online_State(module)){shell_print("ON-line\r\n");}else{shell_print("OFF-line\r\n");} }
 static void Module_Status(char * arg)
 {
 	shell_print("Module----------\r\n");
 
-	// shell_print("host: ");
-	// MODULE_STATUS_PRINT(0);
+	shell_print("remote control:\t");
+	ONLINE_STATUS_PRINT(0);
 
-	// shell_print("gyro: ");
-	// MODULE_STATUS_PRINT(1);
+	shell_print("chassis motor:\t");
+	ONLINE_STATUS_PRINT(1);
 
-	// shell_print("sht10: ");
-	// MODULE_STATUS_PRINT(2);
+	shell_print("gimbal motor:\t");
+	ONLINE_STATUS_PRINT(2);
+
+	shell_print("shooter motor:\t");
+	ONLINE_STATUS_PRINT(3);
+
+	shell_print("auto aim:\t");
+	ONLINE_STATUS_PRINT(4);
+
+	shell_print("judge system:\t");
+	ONLINE_STATUS_PRINT(5);
+
+	shell_print("super cap:\t");
+	ONLINE_STATUS_PRINT(6);
+
+	shell_print("gyroscope:\t");
+	ONLINE_STATUS_PRINT(7);
 
 	shell_print("----------------\r\n");
 }
 
-static void Gyroscope_Data(char * arg)
+#define PRINT_MOTOR_C620_DATA(name, data) shell_print("%s\tangle: %d, speed: %drpm, current: %.1fA, temperate: %dC\r\n", name, data.mechanical_angle, data.speed_rpm, (((float)(data.actual_torque_current))*20.0f/16384.0f), data.temperate);
+#define PRINT_MOTOR_GM6020_DATA(name, data) shell_print("%s\tangle: %d, speed: %drpm, current: %d, temperate: %dC\r\n", name, data.mechanical_angle, data.speed_rpm, data.actual_torque_current, data.temperate);
+#define PRINT_MOTOR_C615_DATA(name, data) shell_print("%s\tangle: %d, speed: %drpm, torque: %d\r\n", name, data.mechanical_angle, data.speed_rpm, data.actual_torque_current);
+static void Motors_Data(char * arg)
 {
-	// if(1)
-	// {
-	// 	shell_print("roll:%.2f, pitch:%.2f, yaw:%.2f", gyro_data->angle.roll_x, gyro_data->angle.pitch_y, gyro_data->angle.yaw_z);
-	// }
-	// else
-	// {
-	// 	shell_print("Gyroscope offline!");
-	// }
-	// shell_print("\r\n");
-	shell_print("TODO\r\n");
+	PRINT_MOTOR_C620_DATA("chassis motor1", shell_chassis_motor[0]);
+	PRINT_MOTOR_C620_DATA("chassis motor2", shell_chassis_motor[1]);
+	PRINT_MOTOR_C620_DATA("chassis motor3", shell_chassis_motor[2]);
+	PRINT_MOTOR_C620_DATA("chassis motor4", shell_chassis_motor[3]);
+	PRINT_MOTOR_GM6020_DATA("yaw motor", shell_yaw_motor);
+	//PRINT_MOTOR_GM6020_DATA("pitch motor", gimbal_motor[1]);
+	PRINT_MOTOR_C620_DATA("wave motor", shell_shooter_wave_motor[0]);
+	PRINT_MOTOR_C620_DATA("fric motor right",shell_shooter_fric_motor[0]);
+	PRINT_MOTOR_C620_DATA("fric motor left",shell_shooter_fric_motor[1]);
+	shell_print("\r\n");
 }
 
+
+static void Gyroscope_Data(char * arg)
+{
+	if(Get_Module_Online_State(7))
+	{
+		shell_print("roll:%.2f, pitch:%.2f, yaw:%.2f", wt61c_data->angle.roll_x, wt61c_data->angle.pitch_y, wt61c_data->angle.yaw_z);
+	}
+	else
+	{
+		shell_print("Gyroscope offline!");
+	}
+	shell_print("\r\n");
+}
+
+static void Super_Cap_Data(char * arg)
+{
+	if(Get_Module_Online_State(6))
+	{
+		shell_print("input voltage:%.2f, cap voltage:%.2f, input current:%.2f, target power:%.2f", super_cap_data->input_voltage, super_cap_data->cap_voltage, super_cap_data->input_current, super_cap_data->target_power);
+	}
+	else
+	{
+		shell_print("Super capacitor offline!");
+	}
+	shell_print("\r\n");
+}
 
 
 static void Gyro_Reset(char * arg)
 {
 	// Create_Gyro_Calibration_Thread();
 	// shell_print("Try create Gyro Calibration Thread...\r\n");
-	shell_print("TODO\r\n");
+	shell_print("TODO NOLLFINISH\r\n");
 }
 
 float easy_pid_p, easy_pid_i, easy_pid_d;

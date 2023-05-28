@@ -52,4 +52,5 @@ int8_t *Get_Is_OK_Fire(void);
 const int32_t* Get_Fire_One_Bullet_Signal(void);
 const int32_t* Get_Fire_Five_Bullet_Signal(void);
 void Parse_Friction__Data_ISR(void);
+Motor_Measure_t *Get_Shooter_Parsed_FeedBack_Data(void);
 #endif //__SHOOT_TASK_H_

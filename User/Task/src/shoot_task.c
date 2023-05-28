@@ -248,3 +248,14 @@ const int32_t *Get_Fire_Five_Bullet_Signal(void)
 {
     return &fire_five_bullet;
 }
+/**
+ * @brief                       获取解析后的机器人模式结构体指针
+ * @param[in]                   void
+ * @retval {Rc_Ctrl_t*}         解析后的解析后的机器人模式结构体指针
+ */
+Motor_Measure_t *Get_Shooter_Parsed_FeedBack_Data(void)
+{
+    return friction_motor_feedback_data;
+}
+
+

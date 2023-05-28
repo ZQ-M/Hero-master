@@ -35,6 +35,9 @@ void StartClientUiTask(void const *argument)
   Uart8_Dma_Tx_Init();
   UI_RC_DATA = Get_Rc_Parsed_RemoteData_Pointer();
   UI_JUDGE_DATA = Get_Judge_Data();
+  (void)UI_RC_DATA;
+  (void)UI_JUDGE_DATA;
+  (void)friction_motor_feedback_data;
   for (;;)
   {
     // /* …Ë÷√ª˙∆˜»ÀID */
