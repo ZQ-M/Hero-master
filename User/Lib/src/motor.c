@@ -8,3 +8,10 @@ void Calculate_Motor_Data(Motor_Measure_t* motor, uint8_t* can_message)
 	motor->temperate = can_message[6];
 }
 
+void Calculate_PITCH_Angle(Motor_Measure_t* motor, uint8_t* can_message)
+{
+	motor->mechanical_angle = (uint16_t)(can_message[4] << 8 | can_message[3]);
+	motor->speed_rpm = 0;
+	motor->actual_torque_current = 0;
+	motor->temperate = 0;
+}

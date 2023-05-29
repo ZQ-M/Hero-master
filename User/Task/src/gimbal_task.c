@@ -244,7 +244,7 @@ void Parse_Can2_Gimbal_Rxd_Data(CAN_RxHeaderTypeDef *p_can_rx_header, uint8_t *d
 
     case CAN_PITCH_MOTOR_ID:
     {
-        Calculate_Motor_Data(&gimbal_motor_parsed_feedback_data[pitch_motor_index], data);
+        Calculate_PITCH_Angle(&gimbal_motor_parsed_feedback_data[pitch_motor_index], data);
         break;
     }
 

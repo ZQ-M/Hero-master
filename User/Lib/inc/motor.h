@@ -23,6 +23,7 @@ typedef struct
     }
 
 void Calculate_Motor_Data(Motor_Measure_t* motor, uint8_t* can_message);
+void Calculate_PITCH_Angle(Motor_Measure_t* motor, uint8_t* can_message);
 
 #endif // __MOTOR_H_
 		

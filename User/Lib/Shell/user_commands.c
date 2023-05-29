@@ -9,6 +9,7 @@ extern Shell_command_t shell_cmd_root;
 #include "can1_device.h"
 #include "can2_device.h"
 #include "shoot_task.h"
+#include "gimbal_task.h"
 #include "super_capacitor_task.h"
 #include "externel_gyroscope_task.h"
 //#include "autoaim.h"（希望有一天电控和视觉能开始联调）
@@ -16,7 +17,7 @@ extern Shell_command_t shell_cmd_root;
 //变量定义
 static const Motor_Measure_t* shell_chassis_motor;
 static const Motor_Measure_t* shell_shooter_wave_motor; //波轮电机数据
-static Motor_Measure_t shell_yaw_motor; //云台电机数据
+static const Motor_Measure_t* shell_gimbal_motor; //云台电机数据
 static const Motor_Measure_t* shell_shooter_fric_motor;
 static const Super_Capacitor_t* super_cap_data;
 static const Wt61c_Data_t* wt61c_data;
@@ -25,6 +26,7 @@ static const Wt61c_Data_t* wt61c_data;
 //函数声明
 static void Module_Status(char * arg);
 static void Motors_Data(char * arg);
+static void Gimbal_Data(char * arg);
 //static void Autoaim_Data(char * arg);
 static void Super_Cap_Data(char * arg);
 static void Gyroscope_Data(char * arg);
@@ -42,7 +44,7 @@ void User_Commands_Init(void)
 	//变量初始化
 	shell_chassis_motor = Get_Can1_Feedback_Data();
 	shell_shooter_wave_motor = Get_Wave_Motor_Paresed_Data();
-	shell_yaw_motor = Get_Yaw_Data();
+	shell_gimbal_motor = Get_Gimbal_Parsed_FeedBack_Data();
 	shell_shooter_fric_motor = Get_Shooter_Parsed_FeedBack_Data();
 	super_cap_data = Get_SuperCapacitor_Date();
 	wt61c_data = Get_Gyroscope_Data_t();
@@ -52,6 +54,7 @@ void User_Commands_Init(void)
 	Shell_Register_Command("module-status" , Module_Status);
 	Shell_Register_Command("gyroscope-data" , Gyroscope_Data);
 	Shell_Register_Command("motors-data" , Motors_Data);
+	Shell_Register_Command("gimbal-data" , Gimbal_Data);
 	Shell_Register_Command("super-cap-data" , Super_Cap_Data);
 	Shell_Register_Command("gyro-reset" , Gyro_Reset);
 	Shell_Register_Command("pid-show" , Pid_Show);
@@ -104,14 +107,20 @@ static void Motors_Data(char * arg)
 	PRINT_MOTOR_C620_DATA("chassis motor2", shell_chassis_motor[1]);
 	PRINT_MOTOR_C620_DATA("chassis motor3", shell_chassis_motor[2]);
 	PRINT_MOTOR_C620_DATA("chassis motor4", shell_chassis_motor[3]);
-	PRINT_MOTOR_GM6020_DATA("yaw motor", shell_yaw_motor);
-	//PRINT_MOTOR_GM6020_DATA("pitch motor", gimbal_motor[1]);
+	PRINT_MOTOR_GM6020_DATA("yaw motor", shell_gimbal_motor[0]);
+	PRINT_MOTOR_GM6020_DATA("pitch motor", shell_gimbal_motor[1]);
 	PRINT_MOTOR_C620_DATA("wave motor", shell_shooter_wave_motor[0]);
 	PRINT_MOTOR_C620_DATA("fric motor right",shell_shooter_fric_motor[0]);
 	PRINT_MOTOR_C620_DATA("fric motor left",shell_shooter_fric_motor[1]);
 	shell_print("\r\n");
 }
 
+static void Gimbal_Data(char * arg)
+{
+	PRINT_MOTOR_GM6020_DATA("yaw motor", shell_gimbal_motor[0]);
+	PRINT_MOTOR_GM6020_DATA("pitch motor", shell_gimbal_motor[1]);
+	shell_print("\r\n");
+}
 
 static void Gyroscope_Data(char * arg)
 {
