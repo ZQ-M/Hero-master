@@ -16,4 +16,5 @@ void Calc_Gyro_Motors_Speed(float *motors_speed, float rotate_speed, float move_
 float Calc_Chassis_Follow(void);
 /* 功率控制 */
 void chassis_power_control(int16_t *chassis_motor1, int16_t *chassis_motor2, int16_t *chassis_motor3, int16_t *chassis_motor4);
+void Parse_Can1_Pitch_Encoding(void);//解析 CAN1 上的PITCH编码器数据
 #endif //__CHASSIS_TASK_H_

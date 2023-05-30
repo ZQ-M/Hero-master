@@ -52,6 +52,12 @@ void Can1_Process(CAN_RxHeaderTypeDef *can1_rx_message)
         Info_Super_Capacitor_Parse_Data();
         break;
     }
+    case Pitch_Encoding_Angle:
+    {
+        /* 通知Pitch进行解析解析 */
+        Parse_Can1_Pitch_Encoding();
+        break;
+    }
     default:
     {
         break;

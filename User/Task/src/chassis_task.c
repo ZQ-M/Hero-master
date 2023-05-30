@@ -18,6 +18,7 @@ static Robot_control_data_t *robot_mode_data_pt;            ///< Ö¸Ïò½âÎöºóµÄ»úÆ
 static Motor_Measure_t *chassis_motor_feedback_parsed_data; ///< Ö¸Ïò½âÎöºóµÄµ×ÅÌµç»úÊý¾Ý
 static Motor_Measure_t *gimbal_motor_feedback_parsed_data;  ///< Ö¸Ïò½âÎöºóµÄÔÆÌ¨µç»úÊý¾Ý
 static const uint8_t *yaw_motor_index;                      ///< Ö¸Ïòyaw Öáµç»úÔÚÔÆÌ¨µç»úÊý¾ÝÖÐµÄÏÂ±ê
+static const uint8_t *pitch_motor_index;                    ///< Ö¸Ïòpitch Öáµç»úÔÚÔÆÌ¨µç»úÊý¾ÝÖÐµÄÏÂ±ê
 static const Judge_data_t *referee_date_pt;                 ///< Ö¸Ïò½âÎöºóµÄ²ÃÅÐÏµÍ³Êý¾Ý
 
 /* ÏÞ·ù */
@@ -209,6 +210,7 @@ void Chassis_Init(void)
     chassis_motor_feedback_parsed_data = Get_Can1_Feedback_Data();         // CAN1 ×ÜÏßÉÏµç»úµÄ·´À¡Êý¾Ý
     gimbal_motor_feedback_parsed_data = Get_Gimbal_Parsed_FeedBack_Data(); // CAN2×ÜÏßÉÏµç»úµÄ·´À¡Êý¾Ý
     yaw_motor_index = Get_Yaw_Motor_Index();                               // »ñÈ¡ yaw Öáµç»úÔÚÊý×éÖÐµÄÏÂ±ê
+    pitch_motor_index = Get_Pitch_Motor_Index();                               // »ñÈ¡ yaw Öáµç»úÔÚÊý×éÖÐµÄÏÂ±ê
 }
 
 /**
@@ -307,6 +309,16 @@ void Parse_Can1_Rxd_Data(void)
     static uint8_t i = 0;
     i = can1_rx_header->StdId - CAN_3508_M1_ID;
     Calculate_Motor_Data(&m3508_feddback_data[i], can1_rxd_data);
+}
+
+/**
+ * @brief           ½âÎö CAN1 ÉÏµÄPITCH±àÂëÆ÷Êý¾Ý
+ * @param[in]       void
+ * @retval          void
+ */
+void Parse_Can1_Pitch_Encoding(void)
+{
+    gimbal_motor_feedback_parsed_data[*pitch_motor_index].mechanical_angle = (uint16_t)(can1_rxd_data[4] << 8 | can1_rxd_data[3]);
 }
 
 /**
