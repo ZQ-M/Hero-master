@@ -17,18 +17,19 @@ typedef enum
 	CAN_SHOOTER_ALL_ID = 0x200,
 	CAN_3508_FRIC_ID_LEFT = 0x201,
 	CAN_3508_FRIC_ID_RIGHT = 0x202,
-	CAN_3508_WAVE_ID = 0x206, ///<æ³¢è½®IDä»Ž6æ›´æ¢ä¸º3
+	CAN_3508_WAVE_ID = 0x206, ///<²¨ÂÖID´Ó6¸ü»»Îª3
 
 	CAN_GIMBAL_ALL_ID = 0x2FF,
 	CAN_YAW_MOTOR_ID = 0x209,	///< x  5
-	CAN_PITCH_MOTOR_ID = 0x001, ///< y  6
+	CAN_PITCH_MOTOR_ID = 0x001, ///< PITCH±àÂëÆ÷CAN_ID
+	CAN_PITCH_OutPut_MOTOR_ID = 0x002, ///<PitchÊä³öµç»úCAN_ID
 } Can2_RxMsg_ID;
 
 void Can2_Rx_FIFO0_IT_Callback(void);
-Motor_Measure_t *Get_Pitch_Motor_Feedback_Data(void); ///< èŽ·å–Pitç”µæœºåé¦ˆå€¼
-Motor_Measure_t *Get_Yaw_Motor_Feedback_Data(void);	  ///< èŽ·å–Yawç”µæœºåé¦ˆå€¼
-const uint8_t *Get_Pitch_Motor_Index(void);			  ///< èŽ·å– pitch è½´ç”µæœºåœ¨æ•°ç»„ä¸­çš„ä¸‹æ ‡
-const uint8_t *Get_Yaw_Motor_Index(void);			  ///< èŽ·å– Yaw è½´ç”µæœºåœ¨æ•°ç»„ä¸­çš„ä¸‹æ ‡
+Motor_Measure_t *Get_Pitch_Motor_Feedback_Data(void); ///< »ñÈ¡Pitµç»ú·´À¡Öµ
+Motor_Measure_t *Get_Yaw_Motor_Feedback_Data(void);	  ///< »ñÈ¡Yawµç»ú·´À¡Öµ
+const uint8_t *Get_Pitch_Motor_Index(void);			  ///< »ñÈ¡ pitch Öáµç»úÔÚÊý×éÖÐµÄÏÂ±ê
+const uint8_t *Get_Yaw_Motor_Index(void);			  ///< »ñÈ¡ Yaw Öáµç»úÔÚÊý×éÖÐµÄÏÂ±ê
 Motor_Measure_t *Get_Gimbal_Motor_Feedback_Data(void);
 CAN_RxHeaderTypeDef *Get_CAN2_Rx_Header(void);
 CAN_RxHeaderTypeDef *Get_CAN2_Rx_Header(void);
@@ -45,7 +46,7 @@ float Calc_Wave_Motor_Angle8191_Pid(float tar_angle, float current_angle);
 int *Get_Error_Integral(void);
 uint16_t *Get_Last_Machine_Angle(void);
 uint16_t *Get_This_Machine_Angle(void);
-/* é‡å†™å‡½æ•° */
+/* ÖØÐ´º¯Êý */
 void Set_Gimbal_Motors_Speed(float yaw_speed, float pitch_speed, float yaw_speed_rpm, float pitch_speed_rpm);
 Motor_Measure_t Get_Yaw_Data(void);
 Motor_Measure_t Get_Pitch_Data(void);

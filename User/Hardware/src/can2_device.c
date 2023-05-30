@@ -11,7 +11,6 @@ extern float easy_pid2_p, easy_pid2_i, easy_pid2_d;
 Pid_Position_t motor_yaw_angle_pid = NEW_POSITION_PID(1.8, 0.2, 0, 15.56, 60, 0, 3000, 500);			  ///< yaw电机角度PID
 static Pid_Position_t motor_yaw_speed_pid = NEW_POSITION_PID(800, 0.5, 0.001, 10, 30000, 0, 1000, 500); ///< yaw电机速度PID
 
-static Pid_Position_t motor_pitch_speed_pid = NEW_POSITION_PID(650, 0.1, 0.000001, 220, 30000, 0, 1000, 500); ///< pitch电机速度PID
 static Pid_Position_t motor_pitch_angle_pid = NEW_POSITION_PID(0.35, 0.01, 0.00, 100, 50, 0, 3000, 500); ///< pitch电机角度PID
 
 static Pid_Position_t friction_motor_left_speed_pid = NEW_POSITION_PID(13, 0, 0.7, 2000, 16383, 0, 1000, 500);
@@ -180,9 +179,22 @@ void Set_Gimbal_Motors_Speed(float yaw_speed, float pitch_speed, float yaw_speed
 	Can_Send(2,
 		CAN_GIMBAL_ALL_ID,
 		Pid_Position_Calc(&motor_yaw_speed_pid, yaw_speed, yaw_speed_rpm),
-		Pid_Position_Calc(&motor_pitch_speed_pid, pitch_speed, pitch_speed_rpm),
+		// Pid_Position_Calc(&motor_pitch_speed_pid, pitch_speed, pitch_speed_rpm),
+		0,
 		0,
 		0);
+	
+	
+	int pitch_speed_toint = pitch_speed;
+	int16_t speedi16 = pitch_speed_toint;
+	// debug_print("speed: %d\n", pitch_speed_toint);
+	Can_Send(3,
+		CAN_PITCH_OutPut_MOTOR_ID,
+		speedi16,
+    0,
+    255,
+    0);
+
 }
 
 /**

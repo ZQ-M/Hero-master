@@ -104,10 +104,6 @@ void FrictionWheelSpeed(void)
 {
 }
 
-void Last_42mm_Speed(void)
-{
-}
-
 void Super_Capacitance(void)
 {
   //Float_Draw(&SuperCapacitors, "021", UI_Graph_ADD, 0, UI_Color_Cyan, 12, 1, 2, 800, 540, UI_JUDGE_DATA);

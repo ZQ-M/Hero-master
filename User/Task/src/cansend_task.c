@@ -39,6 +39,13 @@ void StartCanSendTask(void *pvParameters)
 			{
 				Can2_Send_4Msg(can_send_msg.id, can_send_msg.data1, can_send_msg.data2, can_send_msg.data3, can_send_msg.data4);
 			}
+			else if(can_send_msg.canx == 3)
+			{
+				int32_t pitchSpeed = can_send_msg.data1;
+				debug_print("debug:%d",pitchSpeed);
+				// pitchSpeed = 500;
+				Can2_Send_6Msg(can_send_msg.id, pitchSpeed , 255);
+			}
 		}
 		else
 		{

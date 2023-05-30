@@ -45,3 +45,37 @@ void Can2_Send_4Msg(uint32_t id, int16_t data1, int16_t data2, int16_t data3, in
 	///< use HAL function send
 	HAL_CAN_AddTxMessage(&hcan2, &can_tx_msg_format, can_tx_msg, &send_mail_box);
 }
+
+/**
+ * @brief           CAN2上PITCH轴电机
+ * @param[in]		id 		Can_id 
+ * @param[in]		speed	电机速度 from -1279 ~ 1279
+ * @param[in]		acc		电机加速度	from 0 ~ 255
+ * @retval          void
+ */
+void Can2_Send_6Msg(uint32_t id, int32_t speed, uint8_t acc)
+{
+  static CAN_TxHeaderTypeDef can_tx_msg_format;
+	static uint8_t can_tx_msg[8];
+	static uint32_t send_mail_box;
+	can_tx_msg_format.StdId = id;
+	can_tx_msg_format.IDE = CAN_ID_STD;
+	can_tx_msg_format.RTR = CAN_RTR_DATA;
+	can_tx_msg_format.DLC = 0x05;
+	unsigned char positive_or_negative = 0x00;
+	if(speed < 0)
+	{
+		positive_or_negative = 0x01;
+		speed = -speed;
+	}
+	int16_t speedi16 = speed;
+	uint16_t speedu16 = speedi16;
+	can_tx_msg[0] = 0xF6;
+	can_tx_msg[1] = (positive_or_negative << 4) & 0xF0 + (speedu16 >> 8) & 0x0F;
+	can_tx_msg[2] = speedu16 & 0x00FF;
+	can_tx_msg[3] = acc;
+	can_tx_msg[4] = 0x6B;
+
+	///< use HAL function send
+	HAL_CAN_AddTxMessage(&hcan2, &can_tx_msg_format, can_tx_msg, &send_mail_box);
+}
