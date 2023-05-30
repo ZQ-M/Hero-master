@@ -114,11 +114,15 @@ void Can2_Rx_FIFO0_IT_Callback(void)
 		Module_Reload(Module_Wave_Wheel);
 	}
 	case CAN_YAW_MOTOR_ID:
-		 {
-		 	Calculate_Motor_Data(&yaw_motor_feedback_data, can2_rxd_data_buffer);
-		 }
-
-	case CAN_PITCH_MOTOR_ID:
+	{
+		Calculate_Motor_Data(&yaw_motor_feedback_data, can2_rxd_data_buffer);
+	}
+	//µôµ½CAN1
+	// case CAN_PITCH_MOTOR_ID:
+	// {
+	// 	Can2_Parse_For_Callback();
+	// }
+	case CAN_PITCH_OutPut_MOTOR_ID:
 	{
 		Can2_Parse_For_Callback();
 	}
@@ -176,25 +180,12 @@ void Set_Gimbal_Motors_Speed(float yaw_speed, float pitch_speed, float yaw_speed
 	// motor_pitch_speed_pid.kp = easy_pid_p;
 	// motor_pitch_speed_pid.ki = easy_pid_i;
 	// motor_pitch_speed_pid.kd = easy_pid_d;
-	// Can_Send(2,
-	// 	CAN_GIMBAL_ALL_ID,
-	// 	Pid_Position_Calc(&motor_yaw_speed_pid, yaw_speed, yaw_speed_rpm),
-	// 	// Pid_Position_Calc(&motor_pitch_speed_pid, pitch_speed, pitch_speed_rpm),
-	// 	0,
-	// 	0,
-	// 	0);
-	
-	
-	int pitch_speed_toint = pitch_speed;
-	int16_t speedi16 = pitch_speed_toint;
-	// debug_print("speed: %d\n", pitch_speed_toint);
-	Can_Send(3,
-		CAN_PITCH_OutPut_MOTOR_ID,
-		speedi16,
-    0,
-    254,
-    0);
-
+	Can_Send(2,
+		CAN_GIMBAL_ALL_ID,
+		Pid_Position_Calc(&motor_yaw_speed_pid, yaw_speed, yaw_speed_rpm),
+		0,
+		0,
+		0);
 }
 
 /**

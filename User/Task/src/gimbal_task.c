@@ -1,5 +1,6 @@
 #include "gimbal_task.h"
 #include "externel_gyroscope_task.h"
+#include "cansend_task.h"
 
 /* 云台电机下标 */
 static const uint8_t gimbal_motor_num = 2;  ///< 云台电机的数量
@@ -234,10 +235,27 @@ void StartGimbalTask(void const *argument)
             gimbal_motor_parsed_feedback_data[yaw_motor_index].speed_rpm,
             gimbal_motor_parsed_feedback_data[pitch_motor_index].speed_rpm);
 
-        osDelay(100);
+        osDelay(19);
     }
 }
 
+void StartPitchTask(void const *argument)
+{
+    osDelay(100);
+    for(;;)
+    {
+        int pitch_speed_toint = pid_out[Pitch_target_Speed];
+        int16_t speedi16 = pitch_speed_toint;
+        //debug_print("speed: %d\n", pitch_speed_toint);
+        Can_Send(3,
+                 CAN_PITCH_OutPut_MOTOR_ID,
+                 speedi16,
+                 0,
+                 254,
+                 0);
+        osDelay(100);
+    }
+}
 /**
  * @brief               云台相关的所有初始化
  *                      CAN2初始化，控制数据接收初始化，陀螺仪数据接收初始化
