@@ -292,7 +292,7 @@ static void Switch_Mouse_Key_Change(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data,
 	if (KEY_PRESSED(KEY_SHIFT))
 	{
 		robot_control_data->parameter.chassis_acceleration = 50;
-		robot_control_data->parameter.chassis_max_speed = 660;
+		robot_control_data->parameter.chassis_max_speed = 960;
 	}
 	else
 	{
@@ -348,7 +348,7 @@ static void Switch_Mouse_Key_Change(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data,
 		robot_control_data->mode.mouse_keyboard_gimbal_mode = 1;
 	}
 
-	//摩擦轮高速模式 R 
+	//摩擦轮开关 R 
 	if (KEY_CLICKED(KEY_R))
 	{
 		if (robot_control_data->mode.fric_cover_mode == cover_on_ENUM)
@@ -363,19 +363,22 @@ static void Switch_Mouse_Key_Change(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data,
 		}
 	}
 
-	//摩擦轮低速模式 E
+	//YAW轴左移动 
+	if (KEY_CLICKED(KEY_Q))
+	{
+		KeyQ_Clicked_Status();
+	}
+
+	//YAW轴右移动 E
 	if (KEY_CLICKED(KEY_E))
 	{
-		if (robot_control_data->mode.fric_cover_mode == fric_adaptive_speed_mode_ENUM)
-		{
-			robot_control_data->mode.fric_cover_mode = fric_cover_off_mode_ENUM;
-			Set_Beep_Time(1, 800, 60);
-		}
-		else
-		{
-			robot_control_data->mode.fric_cover_mode = fric_adaptive_speed_mode_ENUM;
-			Set_Beep_Time(2, 800, 60);
-		}
+		KeyE_Clicked_Status();
+	}
+
+	//180°回头 X
+	if (KEY_CLICKED(KEY_X))
+	{
+		KeyX_Clicked_Status();
 	}
 
 #undef KEY_CTRL

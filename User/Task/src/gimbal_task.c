@@ -19,6 +19,10 @@ static Rc_Ctrl_t *rc_data_pt;                    ///< 指向遥控器数据的结构体指针
 static Robot_control_data_t *robot_mode_data_pt; ///< 指向机器人模式的结构体指针
 static Motor_Measure_t gimbal_motor_parsed_feedback_data[gimbal_motor_num]; ///< 解析后的云台电机数据数组(Yaw:0;Pitch:1)
 static Wt61c_Data_t *imu_data_usart6;                                       ///< 指向解析后的串口陀螺仪数据
+/* 键鼠操作微调 */
+static int mouse_keyboard_Q = 0;
+static int mouse_keyboard_E = 0;
+static int mouse_keyboard_X = 0;
 
 /* 存放pid计算之后的输出 */
 float pid_out[ALL_PID] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; ///< 这个参数也可放在每个task.c中，定义为静态变量
@@ -41,6 +45,7 @@ void StartGimbalTask(void const *argument)
 
             case 1: ///<底盘跟随
             {
+                /* 不会进入到这里，请查看case 2 */
                 /*底盘跟随模式和小陀螺模式在云台任务中逻辑共用,
                 均是以陀螺仪做角度闭环作为速度值，差别在底盘任务*/
             }
@@ -61,11 +66,13 @@ void StartGimbalTask(void const *argument)
                     yaw_angle_set += 360;
                 }
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
-                pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
+                // pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
+                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 12.0f;
                 break;
             }
             case 3: ///< 自稳+云台自由移动
             {
+                /* 不会进入到这里，请查看case 2 */
                 /* 跟随与小陀螺在云台共用逻辑 */
             }
             case 4: ///< 自稳+小陀螺
@@ -116,6 +123,23 @@ void StartGimbalTask(void const *argument)
                 yaw_angle_set -= robot_mode_data_pt->virtual_rocker.ch0 / 58.0f; ///<倍率需要调整。这个数据是步兵的
                 pitch_angle_set -= robot_mode_data_pt->virtual_rocker.ch1 / 1.6f;
 
+                //键鼠操作微调
+                if(mouse_keyboard_Q)        //>左微调
+                {
+                    yaw_angle_set -= 3;
+                    mouse_keyboard_Q = 0;
+                }
+                if(mouse_keyboard_E)        //>右微调
+                {
+                    yaw_angle_set += 3;
+                    mouse_keyboard_E = 0;
+                }
+                if(mouse_keyboard_X)        //>180°回头
+                {
+                    yaw_angle_set += 180;
+                    mouse_keyboard_E = 0;
+                }
+
                 // yaw角度回环
                 if (yaw_angle_set > 360)
                 {
@@ -141,6 +165,23 @@ void StartGimbalTask(void const *argument)
                 yaw_angle_set -= robot_mode_data_pt->virtual_rocker.ch0 / 58.0f; ///<倍率需要调整。这个数据是步兵的
                 pitch_angle_set -= robot_mode_data_pt->virtual_rocker.ch1 / 1.6f;
 
+                //键鼠操作微调
+                if(mouse_keyboard_Q)        //>左微调
+                {
+                    yaw_angle_set -= 3;
+                    mouse_keyboard_Q = 0;
+                }
+                if(mouse_keyboard_E)        //>右微调
+                {
+                    yaw_angle_set += 3;
+                    mouse_keyboard_E = 0;
+                }
+                if(mouse_keyboard_X)        //>180°回头
+                {
+                    yaw_angle_set += 180;
+                    mouse_keyboard_E = 0;
+                }
+
                 // yaw角度回环
                 if (yaw_angle_set > 360)
                 {
@@ -150,6 +191,7 @@ void StartGimbalTask(void const *argument)
                 {
                     yaw_angle_set += 360;
                 }
+
                 /*pitch轴角度限幅*/
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_down_angle_limit, pitch_up_angle_limit);
 
@@ -164,7 +206,7 @@ void StartGimbalTask(void const *argument)
                 pitch_angle_set += robot_mode_data_pt->virtual_rocker.ch1 / 3.0f;
                 /*pitch角度限制*/
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_up_angle_limit, pitch_down_angle_limit);
-
+                
                 pid_out[Yaw_target_Speed] = robot_mode_data_pt->virtual_rocker.ch0 / 1.6f;
                 pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
                 break;
@@ -300,4 +342,19 @@ float GM6020_YAW_Angle_To_360(uint16_t gm6020_angle)
     }
     return (float)(yaw_angle * 360 / 8191);
 #undef ROBOT_HEAD_ANGLE
+}
+
+void KeyQ_Clicked_Status(void)
+{
+mouse_keyboard_Q = 1;
+}
+
+void KeyE_Clicked_Status(void)
+{
+mouse_keyboard_E = 1;
+}
+
+void KeyX_Clicked_Status(void)
+{
+mouse_keyboard_X = 1;
 }

@@ -29,4 +29,8 @@ const uint8_t *Get_Pitch_Motor_Index(void);
 const uint8_t *Get_Yaw_Motor_Index(void);
 float GM6020_YAW_Angle_To_360(uint16_t gm6020_angle); ///<电机返回机械角数据转换为度数格式
 void Can2_Parse_For_Callback(void);
+/* 键鼠操作微调函数 */
+void KeyQ_Clicked_Status(void);
+void KeyE_Clicked_Status(void);
+void KeyX_Clicked_Status(void);
 #endif //__GIMBAL_TASK_H_
