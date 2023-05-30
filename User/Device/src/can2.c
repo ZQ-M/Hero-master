@@ -71,7 +71,7 @@ void Can2_Send_6Msg(uint32_t id, int32_t speed, uint8_t acc)
 	int16_t speedi16 = speed;
 	uint16_t speedu16 = speedi16;
 	can_tx_msg[0] = 0xF6;
-	can_tx_msg[1] = (positive_or_negative << 4) & 0xF0 + (speedu16 >> 8) & 0x0F;
+	can_tx_msg[1] = ((positive_or_negative << 4) & 0xF0) | ((speedu16 >> 8) & 0x0F);
 	can_tx_msg[2] = speedu16 & 0x00FF;
 	can_tx_msg[3] = acc;
 	can_tx_msg[4] = 0x6B;

@@ -33,18 +33,18 @@ void StartCanSendTask(void *pvParameters)
 		{
 			if(can_send_msg.canx == 1)
 			{
-				Can1_Send_4Msg(can_send_msg.id, can_send_msg.data1, can_send_msg.data2, can_send_msg.data3, can_send_msg.data4);
+				//Can1_Send_4Msg(can_send_msg.id, can_send_msg.data1, can_send_msg.data2, can_send_msg.data3, can_send_msg.data4);
 			}
 			else if(can_send_msg.canx == 2)
 			{
-				Can2_Send_4Msg(can_send_msg.id, can_send_msg.data1, can_send_msg.data2, can_send_msg.data3, can_send_msg.data4);
+				//Can2_Send_4Msg(can_send_msg.id, can_send_msg.data1, can_send_msg.data2, can_send_msg.data3, can_send_msg.data4);
 			}
 			else if(can_send_msg.canx == 3)
 			{
-				int32_t pitchSpeed = can_send_msg.data1;
-				debug_print("debug:%d",pitchSpeed);
-				// pitchSpeed = 500;
-				Can2_Send_6Msg(can_send_msg.id, pitchSpeed , 255);
+				int16_t pitchSpeed = can_send_msg.data1;
+				if(pitchSpeed > 1279) pitchSpeed = 1279;
+				else if(pitchSpeed < -1279) pitchSpeed = -1279;
+				Can2_Send_6Msg(can_send_msg.id, pitchSpeed , 254);
 			}
 		}
 		else

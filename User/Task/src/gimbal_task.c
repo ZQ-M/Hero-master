@@ -67,7 +67,7 @@ void StartGimbalTask(void const *argument)
                 }
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
                 // pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
-                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 12.0f;
+                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) * 2.0f;
                 break;
             }
             case 3: ///< 自稳+云台自由移动
@@ -234,7 +234,7 @@ void StartGimbalTask(void const *argument)
             gimbal_motor_parsed_feedback_data[yaw_motor_index].speed_rpm,
             gimbal_motor_parsed_feedback_data[pitch_motor_index].speed_rpm);
 
-        osDelay(19);
+        osDelay(100);
     }
 }
 
