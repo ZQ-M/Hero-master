@@ -62,7 +62,7 @@ void StartShootTask(void const *argument)
         Parse_Friction_Wave_Motor_Feedback_Data(can2_rx_header_p, can2_rxd_data_buffer); ///< 解析摩擦轮数据
         switch (robot_control_data_pt->mode.fric_cover_mode) ///< 选择摩擦轮模式： 0关闭，1自适应，2高速，3低速
         {
-        case fric_cover_off_mode_ENUM: ///< 0
+        case fric_cover_off_mode_ENUM: ///< 0 关闭摩擦轮
 
         {
             fric_speed = 0;
@@ -71,7 +71,7 @@ void StartShootTask(void const *argument)
             break;
         }
 
-        case fric_adaptive_speed_mode_ENUM: ///< 1
+        case fric_adaptive_speed_mode_ENUM: ///< 1 低速摩擦轮
 
         {
             fric_speed = 4500;
@@ -80,7 +80,7 @@ void StartShootTask(void const *argument)
             break;
         }
 
-        case fric_high_speed_mode_ENUM: ///< 2
+        case fric_high_speed_mode_ENUM: ///< 2 高速摩擦轮
 
         {
             fric_speed = 4900;
@@ -89,12 +89,13 @@ void StartShootTask(void const *argument)
             break;
         }
 
-        case cover_on_ENUM: ///< 3
+        case cover_on_ENUM: ///< 3 开弹舱盖子
 
-        {
-            fric_speed = 7000;
+        {   
+            //英雄不需要开弹舱盖子
+            fric_speed = 0;
             is_ok_fire = 1;
-            Laser_ON();
+            Laser_OFF();
             break;
         }
 
@@ -114,14 +115,8 @@ void StartShootTask(void const *argument)
         if (Updata_Wave_Mouse_Value(&last_wave_ch_value, &this_wave_ch_value))
         {
             osSignalSet(waveWheelTaskHandle, fire_one_bullet);
-        }
-
+        }   
         Set_Friction_Motor_Speed(-fric_speed, fric_speed, friction_motor_feedback_data); ///< 摩擦轮速度PID计算以及设置摩擦轮速度
-        // float motor_date1 = 0;
-        // float motor_date2 = 0;
-        // motor_date1 = shoot_control.fric_send_speed1;
-        // motor_date2 = friction_motor_feedback_data[0].speed_rpm;
-        //Console.print("fric_speed:%0.2f,%0.2f\r\n", fric_speed, friction_motor_feedback_data[0].speed_rpm);
         osDelay(10);
     }
 }

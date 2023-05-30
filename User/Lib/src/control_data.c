@@ -1,4 +1,6 @@
 #include "control_data.h"
+#include "gimbal_task.h"
+#include "client_ui_task.h"
 
 static void Robot_Rc_Mode_Change_Control(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data, Robot_control_data_t *robot_control_data);
 static void Wasd_Key_To_Virtual_Rocker(Rc_Ctrl_t *rc_data, Robot_control_data_t *robot_control_data);
@@ -14,7 +16,7 @@ static void Shoot_Key_Control(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data, Robot
 void Control_Data_Init(Robot_control_data_t *robot_control_data)
 {
 	robot_control_data->mode.control_device = mouse_keyboard_device_ENUM;				///< 鼠标控制
-	robot_control_data->mode.rc_motion_mode = rc_special_mode_ENUM;						///< 特殊模式（遥控器模式）
+	robot_control_data->mode.rc_motion_mode = rc_chassis_follow_mode_ENUM;						///< 特殊模式（遥控器模式）
 	robot_control_data->mode.mouse_keyboard_chassis_mode = mk_chassis_follow_mode_ENUM; ///< 底盘跟随 （键鼠模式）
 	robot_control_data->mode.mouse_keyboard_gimbal_mode = mk_manual_aim_mode_ENUM;		///< 手动瞄准模式（云台自由运动）
 	robot_control_data->mode.gyro_direction = gyro_positive_ENUM;						///< 小陀螺方向：正向
@@ -315,19 +317,10 @@ static void Switch_Mouse_Key_Change(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data,
 		}
 	}
 
-	//云台模式 G (手动控制 自瞄模式)
+	//更新静态UI数据
 	if (KEY_CLICKED(KEY_G))
 	{
-		if (robot_control_data->mode.mouse_keyboard_gimbal_mode == mk_manual_aim_mode_ENUM)
-		{
-			robot_control_data->mode.mouse_keyboard_gimbal_mode = mk_auto_aim_mode_ENUM;
-			Set_Beep_Time(4, 1200, 50);
-		}
-		else
-		{
-			robot_control_data->mode.mouse_keyboard_gimbal_mode = mk_manual_aim_mode_ENUM;
-			Set_Beep_Time(3, 1200, 50);
-		}
+		KeyG_Clicked_Status();
 	}
 
 	//特殊模式
@@ -353,7 +346,7 @@ static void Switch_Mouse_Key_Change(Rc_Ctrl_t *rc_data, Rc_Ctrl_t *last_rc_data,
 	{
 		if (robot_control_data->mode.fric_cover_mode == cover_on_ENUM)
 		{
-			robot_control_data->mode.fric_cover_mode = fric_cover_off_mode_ENUM;
+			robot_control_data->mode.fric_cover_mode = fric_high_speed_mode_ENUM;
 			Set_Beep_Time(1, 800, 60);
 		}
 		else

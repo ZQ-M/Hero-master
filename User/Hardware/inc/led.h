@@ -8,14 +8,14 @@
 #define LED_RED_OFF()    GPIOE->BSRR = LL_GPIO_PIN_11
 #define LED_RED_TOGGLE() GPIOE->ODR ^= LL_GPIO_PIN_11
 
-#define Laser_ON()       LL_GPIO_SetOutputPin(GPIOG, LL_GPIO_PIN_13)///<æ‰“å¼€æ¿€å…‰
-#define Laser_OFF()      LL_GPIO_ResetOutputPin(GPIOG, LL_GPIO_PIN_13)///<å…³é—­æ¿€å…‰
+#define Laser_ON()       GPIOG->BSRR = LL_GPIO_PIN_13 << 16///<´ò¿ª¼¤¹â
+#define Laser_OFF()      GPIOG->BSRR = LL_GPIO_PIN_13    ///<¹Ø±Õ¼¤¹â
 
 #define LED_GREEN_ON()     GPIOF->BSRR = LL_GPIO_PIN_14 << 16
 #define LED_GREEN_OFF()    GPIOF->BSRR = LL_GPIO_PIN_14
 #define LED_GREEN_TOGGLE() GPIOF->ODR ^= LL_GPIO_PIN_14
 
-#define LED_FLOW_ON(led_num)     LL_GPIO_ResetOutputPin(GPIOG, LL_GPIO_PIN_8 >> led_num)///<ç§»ä½å®žçŽ°æµæ°´ç¯
+#define LED_FLOW_ON(led_num)     LL_GPIO_ResetOutputPin(GPIOG, LL_GPIO_PIN_8 >> led_num)///<ÒÆÎ»ÊµÏÖÁ÷Ë®µÆ
 #define LED_FLOW_OFF(led_num)    LL_GPIO_SetOutputPin(GPIOG, LL_GPIO_PIN_8 >> led_num)
 #define LED_FLOW_TOGGLE(led_num) GPIOG->ODR ^= LL_GPIO_PIN_8 >> led_num
 

@@ -16,6 +16,7 @@ void GrenadeCueLine(uint8_t Color);
 void FrictionWheelSpeed(void);
 void Last_42mm_Speed(void);
 void Super_Capacitance(void);
+void KeyG_Clicked_Status(void);
 
 #endif // _CLIENT_UI_TASK_H_
 

@@ -18,6 +18,8 @@ static Motor_Measure_t friction_motor_feedback_data[friction_motor_num];
 const static Judge_data_t *UI_JUDGE_DATA;
 /* 获取遥控器数据 */
 const static Rc_Ctrl_t *UI_RC_DATA;
+/* 键鼠操作微调 */
+static int mouse_keyboard_G = 0;
 
 /* 调用UI结构体--榴弹提示线上部分 */
 Graph_Data line_1, line_2, line_3, line_4, line_5, line_6, Middle_Point;
@@ -40,6 +42,10 @@ void StartClientUiTask(void const *argument)
   (void)friction_motor_feedback_data;
   for (;;)
   {
+    if(mouse_keyboard_G)
+    {
+      
+    }
     // /* 设置机器人ID */
     // UI_Set_Comparable_Id(HERO_IN_WHICH_Camp);
     // /* 通过手动按下字母发送静态UI - 榴弹提示线 */
@@ -111,3 +117,7 @@ void Super_Capacitance(void)
   /* 发送 */
 }
 
+void KeyG_Clicked_Status(void)
+{
+mouse_keyboard_G = 1;
+}
