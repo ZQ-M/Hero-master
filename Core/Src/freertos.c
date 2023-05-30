@@ -99,6 +99,9 @@ osStaticThreadDef_t clientUiTaskControlBlock;
 osThreadId cansendTaskHandle;
 uint32_t cansendTaskBuffer[ 512 ];
 osStaticThreadDef_t cansendTaskControlBlock;
+osThreadId pitchTaskHandle;
+uint32_t pitchTaskBuffer[ 512 ];
+osStaticThreadDef_t pitchTaskControlBlock;
 osMessageQId buzzerQueueHandle;
 uint8_t buzzerQueueBuffer[ 5 * 5 ];
 osStaticMessageQDef_t buzzerQueueControlBlock;
@@ -130,6 +133,7 @@ void StartReferenceTaskTask(void const * argument);
 void StartextErnalGyroscopeParseTask(void const * argument);
 void StartClientUiTask(void const * argument);
 void StartCanSendTask(void const * argument);
+void StartPitchTask(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -261,6 +265,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of cansendTask */
   osThreadStaticDef(cansendTask, StartCanSendTask, osPriorityAboveNormal, 0, 512, cansendTaskBuffer, &cansendTaskControlBlock);
   cansendTaskHandle = osThreadCreate(osThread(cansendTask), NULL);
+
+  /* definition and creation of pitchTask */
+  osThreadStaticDef(pitchTask, StartPitchTask, osPriorityNormal, 0, 512, pitchTaskBuffer, &pitchTaskControlBlock);
+  pitchTaskHandle = osThreadCreate(osThread(pitchTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -572,6 +580,24 @@ __weak void StartCanSendTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END StartCanSendTask */
+}
+
+/* USER CODE BEGIN Header_StartPitchTask */
+/**
+* @brief Function implementing the pitchTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartPitchTask */
+__weak void StartPitchTask(void const * argument)
+{
+  /* USER CODE BEGIN StartPitchTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartPitchTask */
 }
 
 /* Private application code --------------------------------------------------*/
