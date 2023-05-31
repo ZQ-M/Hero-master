@@ -42,9 +42,9 @@ void StartCanSendTask(void *pvParameters)
 			else if(can_send_msg.canx == 3)
 			{
 				int16_t pitchSpeed = can_send_msg.data1;
-				if(pitchSpeed > 1279) pitchSpeed = 1279;
-				else if(pitchSpeed < -1279) pitchSpeed = -1279;
-				Can2_Send_6Msg(can_send_msg.id, pitchSpeed , 254);
+				if(pitchSpeed > 700) pitchSpeed = 700;
+				else if(pitchSpeed < -700) pitchSpeed = -700;
+				Can2_Send_6Msg(can_send_msg.id, pitchSpeed , can_send_msg.data3);
 			}
 		}
 		else

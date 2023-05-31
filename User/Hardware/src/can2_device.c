@@ -11,7 +11,7 @@ extern float easy_pid2_p, easy_pid2_i, easy_pid2_d;
 Pid_Position_t motor_yaw_angle_pid = NEW_POSITION_PID(1.8, 0.2, 0, 15.56, 60, 0, 3000, 500);			  ///< yaw电机角度PID
 static Pid_Position_t motor_yaw_speed_pid = NEW_POSITION_PID(800, 0.5, 0.001, 10, 30000, 0, 1000, 500); ///< yaw电机速度PID
 
-static Pid_Position_t motor_pitch_angle_pid = NEW_POSITION_PID(0.35, 0.01, 0.00, 100, 1278, 0, 3000, 500); ///< pitch电机角度PID
+static Pid_Position_t motor_pitch_angle_pid = NEW_POSITION_PID(0.01, 0.001, 0.00, 100, 1278, 0, 3000, 500); ///< pitch电机角度PID
 
 static Pid_Position_t friction_motor_left_speed_pid = NEW_POSITION_PID(13, 0, 0.7, 2000, 16383, 0, 1000, 500);
 static Pid_Position_t friction_motor_right_speed_pid = NEW_POSITION_PID(13, 0, 0.7, 2000, 16383, 0, 1000, 500);

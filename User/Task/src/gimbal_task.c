@@ -7,9 +7,9 @@ static const uint8_t gimbal_motor_num = 2;  ///< 云台电机的数量
 static const uint8_t yaw_motor_index = 0;   ///< yaw 轴电机在电机数据结构体中的下标
 static const uint8_t pitch_motor_index = 1; ///< pitch 轴电机在电机数据结构体中的下标
 /* Pitch角度限幅 */
-static const uint16_t pitch_up_angle_limit = 4630-50;   ///< pitch 轴云台最低角度
-static const uint16_t pitch_middle_angle = 4312;     ///< pitch 轴云台中间角度
-static const uint16_t pitch_down_angle_limit = 3994-90; ///< pitch 轴云台最高角度
+static const uint16_t pitch_up_angle_limit = 32700;   ///< pitch 轴云台最低角度
+static const uint16_t pitch_middle_angle = 15000;     ///< pitch 轴云台中间角度
+static const uint16_t pitch_down_angle_limit = 0; ///< pitch 轴云台最高角度
 /* Restart角度 */
 static float yaw_angle_set = 0;                    ///< 这里初始角是0，因为在chassis_task.c中，对于跟随根据初始机械角度进行了处理
 static float pitch_angle_set = pitch_middle_angle; ///< pitch 轴云台设置的角度
@@ -67,8 +67,8 @@ void StartGimbalTask(void const *argument)
                     yaw_angle_set += 360;
                 }
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
-                // pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
-                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 20.0f;
+                pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
+                //pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) * 2.0f;
                 break;
             }
             case 3: ///< 自稳+云台自由移动
@@ -93,7 +93,7 @@ void StartGimbalTask(void const *argument)
                 }
 
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
-                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 20.0f;
+                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) * 2.0f;
                 break;
             }
             case 5: ///<特殊模式
@@ -244,16 +244,30 @@ void StartPitchTask(void const *argument)
     osDelay(100);
     for(;;)
     {
+        static int cnt = 0;
+
         int pitch_speed_toint = pid_out[Pitch_target_Speed];
         int16_t speedi16 = pitch_speed_toint;
+        static int16_t speeeed = 0;
+        if(speeeed < speedi16)
+            speeeed += 1;
+        else if(speeeed > speedi16)
+            speeeed -= 1;
+
+        
         //debug_print("speed: %d\n", pitch_speed_toint);
-        Can_Send(3,
-                 CAN_PITCH_OutPut_MOTOR_ID,
-                 speedi16,
-                 0,
-                 254,
-                 0);
-        osDelay(100);
+    if((cnt++)>25){
+            debug_print("speed: %d\n", speedi16);
+            Can_Send(3,
+                CAN_PITCH_OutPut_MOTOR_ID,
+                speedi16,
+                0,
+                255,
+                0);
+            cnt=0;
+        }
+        
+        osDelay(1);
     }
 }
 /**
