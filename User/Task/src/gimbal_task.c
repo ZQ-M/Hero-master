@@ -1,14 +1,15 @@
 #include "gimbal_task.h"
 #include "externel_gyroscope_task.h"
 #include "cansend_task.h"
+#include "buzzer_task.h"
 
 /* 云台电机下标 */
 static const uint8_t gimbal_motor_num = 2;  ///< 云台电机的数量
 static const uint8_t yaw_motor_index = 0;   ///< yaw 轴电机在电机数据结构体中的下标
 static const uint8_t pitch_motor_index = 1; ///< pitch 轴电机在电机数据结构体中的下标
 /* Pitch角度限幅 */
-static const uint16_t pitch_up_angle_limit = 18900;   ///< pitch 轴云台最低角度
-static const uint16_t pitch_middle_angle = 17050;     ///< pitch 轴云台中间角度
+static const uint16_t pitch_up_angle_limit = 17050;   ///< pitch 轴云台最低角度
+static const uint16_t pitch_middle_angle = 18900;     ///< pitch 轴云台中间角度
 static const uint16_t pitch_down_angle_limit = 13100; ///< pitch 轴云台最高角度
 /* Restart角度 */
 static float yaw_angle_set = 0;                    ///< 这里初始角是0，因为在chassis_task.c中，对于跟随根据初始机械角度进行了处理
@@ -67,7 +68,7 @@ void StartGimbalTask(void const *argument)
                     yaw_angle_set += 360;
                 }
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
-                pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
+                pid_out[Pitch_target_Speed] = 0;
                 break;
             }
             case 3: ///< 自稳+云台自由移动
@@ -92,7 +93,7 @@ void StartGimbalTask(void const *argument)
                 }
 
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
-                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) * 1.0f;
+                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 20.0f;
                 break;
             }
             case 5: ///<特殊模式
@@ -102,7 +103,7 @@ void StartGimbalTask(void const *argument)
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_up_angle_limit, pitch_down_angle_limit); ///< pitch角度限幅
                 /* 以下是特殊模式的yaw轴 */
                 pid_out[Yaw_target_Speed] = -(rc_data_pt->rc.ch0) / 6.0f;
-                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 20.0f;
+                pid_out[Pitch_target_Speed] = 0;
                 break;
             }
 
@@ -125,19 +126,22 @@ void StartGimbalTask(void const *argument)
 
                 //键鼠操作微调
                 if(mouse_keyboard_Q)        //>左微调
-                {
-                    yaw_angle_set -= 3;
+                {   
+                    Set_Beep_Time(1, 450, 55);
+                    yaw_angle_set += 1;
                     mouse_keyboard_Q = 0;
                 }
                 if(mouse_keyboard_E)        //>右微调
-                {
-                    yaw_angle_set += 3;
+                {   
+                    Set_Beep_Time(1, 450, 55);
+                    yaw_angle_set -= 1;
                     mouse_keyboard_E = 0;
                 }
                 if(mouse_keyboard_X)        //>180°回头
                 {
+                    Set_Beep_Time(3, 450, 100);
                     yaw_angle_set += 180;
-                    mouse_keyboard_E = 0;
+                    mouse_keyboard_X = 0;
                 }
 
                 // yaw角度回环
@@ -153,8 +157,8 @@ void StartGimbalTask(void const *argument)
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_down_angle_limit, pitch_up_angle_limit);
 
                 /*两轴串级PID的角度环计算*/
-                pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
-                pid_out[Yaw_target_Speed] = robot_mode_data_pt->virtual_rocker.ch1 / 16.0f;
+                pid_out[Pitch_target_Speed] = -(robot_mode_data_pt->virtual_rocker.ch1 / 5.0f);
+                pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
             }
 
             break;
@@ -167,19 +171,22 @@ void StartGimbalTask(void const *argument)
 
                 //键鼠操作微调
                 if(mouse_keyboard_Q)        //>左微调
-                {
-                    yaw_angle_set -= 3;
+                {   
+                    Set_Beep_Time(1, 450, 55);
+                    yaw_angle_set += 1;
                     mouse_keyboard_Q = 0;
                 }
                 if(mouse_keyboard_E)        //>右微调
-                {
-                    yaw_angle_set += 3;
+                {   
+                    Set_Beep_Time(1, 450, 55);
+                    yaw_angle_set -= 1;
                     mouse_keyboard_E = 0;
                 }
                 if(mouse_keyboard_X)        //>180°回头
                 {
+                    Set_Beep_Time(3, 450, 100);
                     yaw_angle_set += 180;
-                    mouse_keyboard_E = 0;
+                    mouse_keyboard_X = 0;
                 }
 
                 // yaw角度回环
@@ -196,19 +203,14 @@ void StartGimbalTask(void const *argument)
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_down_angle_limit, pitch_up_angle_limit);
 
                 /*两轴串级PID的角度环计算*/
-                pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
+                pid_out[Pitch_target_Speed] = -(robot_mode_data_pt->virtual_rocker.ch1 / 5.0f);
                 /* 上一句需重写角度环PID计算函数，pitch轴使用陀螺仪数据 */
-                pid_out[Yaw_target_Speed] = robot_mode_data_pt->virtual_rocker.ch1 / 16.0f;
+                pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
                 break;
             }
             case 3: ///<特殊模式（以云台坐标系为整车运动坐标系，前后左右的运动均以云台视角为准，在Chassis_task.c有具体的说明）
             {
-                pitch_angle_set += robot_mode_data_pt->virtual_rocker.ch1 / 3.0f;
-                /*pitch角度限制*/
-                Pitch_Angle_Limit(&pitch_angle_set, pitch_up_angle_limit, pitch_down_angle_limit);
-                
-                pid_out[Yaw_target_Speed] = robot_mode_data_pt->virtual_rocker.ch0 / 1.6f;
-                pid_out[Pitch_target_Speed] = robot_mode_data_pt->virtual_rocker.ch1 / 16.0f;
+
                 break;
             }
             default:

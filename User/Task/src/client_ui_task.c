@@ -49,7 +49,8 @@ void StartClientUiTask(void const *argument)
   {
     /* 设置机器人ID */
     UI_Set_Comparable_Id(HERO_IN_WHICH_Camp);
-    if(mouse_keyboard_G)
+    // if(mouse_keyboard_G)
+    if(1)
     {
     /* 通过手动按下字母发送静态UI - 榴弹提示线 */
     GrenadeCueLine(UI_Color_Yellow);

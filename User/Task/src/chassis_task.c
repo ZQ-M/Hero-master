@@ -180,6 +180,7 @@ void StartChassisTask(void const *argument)
 
         /* 底盘上电判断 */
         if (Get_Judge_Data()->ext_game_robot_status_t.mains_power_chassis_output == 1)
+        // if (1)
         {
             /**
             * @brief   底盘速度PID环计算以及设置底盘速度
