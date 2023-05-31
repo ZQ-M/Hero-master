@@ -1,6 +1,8 @@
 #include "crc_check.h"
 
+#ifndef NULL
 #define NULL ((void *)0)
+#endif
 
 /* ------------- RM CRC8ะฃั้ ------------- */
 //crc8 generator polynomial:G(x)=x8+x5+x4+1

@@ -31,19 +31,16 @@ void Uart8_It_Tc_Callback(void)
 
 int printf_ui(const char *format, ...)
 {
-	uint32_t len;
-	va_list args;
-	va_start(args, format);
-	len = vsnprintf((char *)uart8_dma_transmit_buf, sizeof(uart8_dma_transmit_buf), (const char *)format, args);
-	va_end(args);
-	Uart8_Transmit_Dma((uint32_t)uart8_dma_transmit_buf, len);
-	while (!((UART8->SR) & USART_SR_TC))
-	{
+return 0;
+}
 
-	}
-	///< 关闭 DMA
-	LL_DMA_DisableStream(DMA1, LL_DMA_STREAM_0);
-	return -1;
+void UI_Data_Send(uint8_t *SendBuff, uint16_t len)
+{
+for(int i=0; i<len; i++)
+{    
+    while((UART8->SR&0X40)==0);//循环发送,直到发送完毕   
+	USART3->DR = (uint8_t)*(SendBuff+i);
+}
 }
 
 void Uart8_Rx_Dma_Init(void)

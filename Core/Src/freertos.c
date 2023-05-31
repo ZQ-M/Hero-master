@@ -259,7 +259,7 @@ void MX_FREERTOS_Init(void) {
   referenceGyroscHandle = osThreadCreate(osThread(referenceGyrosc), NULL);
 
   /* definition and creation of clientUiTask */
-  osThreadStaticDef(clientUiTask, StartClientUiTask, osPriorityNormal, 0, 512, clientUiTaskBuffer, &clientUiTaskControlBlock);
+  osThreadStaticDef(clientUiTask, StartClientUiTask, osPriorityIdle, 0, 512, clientUiTaskBuffer, &clientUiTaskControlBlock);
   clientUiTaskHandle = osThreadCreate(osThread(clientUiTask), NULL);
 
   /* definition and creation of cansendTask */

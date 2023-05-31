@@ -90,7 +90,7 @@ void GrenadeCueLine(uint8_t Color)
   /* 获得发送长度 */
   uint16_t len1 = UI_Get_Send_Data_Len(SendBuff);
   /* 发送 */
-  printf_ui("%s", SendBuff);
+  UI_Data_Send(SendBuff,len1);
   osDelay(100);
 
   /* 榴弹提示线下部分 */
@@ -106,7 +106,7 @@ void GrenadeCueLine(uint8_t Color)
   /* 获得发送长度 */
   uint16_t len2 = UI_Get_Send_Data_Len(SendBuff);
   /* 在此填入发送语句 */
-  printf_ui("%s", SendBuff);
+  UI_Data_Send(SendBuff,len2);
   osDelay(100);
 }
 
@@ -118,8 +118,10 @@ void Super_Capacitance(void)
 {
   Float_Draw(&SuperCapacitors, "021", UI_Graph_ADD, 0, UI_Color_Cyan, 12, 1, 2, 800, 540, UI_super_capacitor->cap_voltage);
   UI_ReFresh(SendBuff, 1, SuperCapacitors);
+  /* 获得发送长度 */
+  uint16_t len3 = UI_Get_Send_Data_Len(SendBuff);
   /* 发送 */
-  printf_ui("%s", SendBuff);
+  UI_Data_Send(SendBuff,len3);
 }
 
 void KeyG_Clicked_Status(void)
