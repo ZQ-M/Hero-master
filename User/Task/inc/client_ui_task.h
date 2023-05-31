@@ -10,6 +10,7 @@
 #include "client_ui.h"
 #include "judge_system.h"
 #include "remote.h"
+#include "super_capacitor_task.h"
 
 void OperatorUItask(void const *argument);
 void GrenadeCueLine(uint8_t Color);

@@ -7,7 +7,7 @@
  */
 void Can2_Filter_Init(void)
 {
-    CAN_FilterTypeDef can_filter_st;
+  CAN_FilterTypeDef can_filter_st;
 
 	can_filter_st.FilterActivation = ENABLE;
 	can_filter_st.FilterMode = CAN_FILTERMODE_IDMASK;

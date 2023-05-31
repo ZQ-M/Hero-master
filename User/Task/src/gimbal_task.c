@@ -68,7 +68,7 @@ void StartGimbalTask(void const *argument)
                 }
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
                 // pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
-                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) * 2.0f;
+                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 20.0f;
                 break;
             }
             case 3: ///< 自稳+云台自由移动
@@ -93,7 +93,7 @@ void StartGimbalTask(void const *argument)
                 }
 
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
-                pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Imu_Pid(pitch_angle_set, imu_data_usart6->angle.pitch_y);
+                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 20.0f;
                 break;
             }
             case 5: ///<特殊模式
@@ -103,7 +103,7 @@ void StartGimbalTask(void const *argument)
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_up_angle_limit, pitch_down_angle_limit); ///< pitch角度限幅
                 /* 以下是特殊模式的yaw轴 */
                 pid_out[Yaw_target_Speed] = -(rc_data_pt->rc.ch0) / 6.0f;
-                pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
+                pid_out[Pitch_target_Speed] = (rc_data_pt->rc.ch1) / 20.0f;
                 break;
             }
 
@@ -155,7 +155,7 @@ void StartGimbalTask(void const *argument)
 
                 /*两轴串级PID的角度环计算*/
                 pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
-                pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
+                pid_out[Yaw_target_Speed] = robot_mode_data_pt->virtual_rocker.ch1 / 16.0f;
             }
 
             break;
@@ -199,7 +199,7 @@ void StartGimbalTask(void const *argument)
                 /*两轴串级PID的角度环计算*/
                 pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
                 /* 上一句需重写角度环PID计算函数，pitch轴使用陀螺仪数据 */
-                pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
+                pid_out[Yaw_target_Speed] = robot_mode_data_pt->virtual_rocker.ch1 / 16.0f;
                 break;
             }
             case 3: ///<特殊模式（以云台坐标系为整车运动坐标系，前后左右的运动均以云台视角为准，在Chassis_task.c有具体的说明）
@@ -209,7 +209,7 @@ void StartGimbalTask(void const *argument)
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_up_angle_limit, pitch_down_angle_limit);
                 
                 pid_out[Yaw_target_Speed] = robot_mode_data_pt->virtual_rocker.ch0 / 1.6f;
-                pid_out[Pitch_target_Speed] = Calc_Pitch_Angle8191_Pid(pitch_angle_set, &gimbal_motor_parsed_feedback_data[pitch_motor_index]);
+                pid_out[Pitch_target_Speed] = robot_mode_data_pt->virtual_rocker.ch1 / 16.0f;
                 break;
             }
             default:

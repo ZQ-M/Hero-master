@@ -11,14 +11,14 @@ static uint8_t SendBuff[113];
 /* 设定动态数据的发射间隔 */
 const int UI_SEND_DELAY_TIME_MS = 1000;
 
-/* 获得摩擦轮数据 */
-static const uint8_t friction_motor_num = 2;
-static Motor_Measure_t friction_motor_feedback_data[friction_motor_num];
-/* 获得裁判系统数据 */
-const static Judge_data_t *UI_JUDGE_DATA;
-/* 获取遥控器数据 */
-const static Rc_Ctrl_t *UI_RC_DATA;
-/* 键鼠操作微调 */
+static const uint8_t friction_motor_num = 2;//摩擦轮数量
+static Motor_Measure_t friction_motor_feedback_data[friction_motor_num];//获得摩擦轮数据
+const static Judge_data_t *UI_JUDGE_DATA; // 获得裁判系统数据
+const static Rc_Ctrl_t *UI_RC_DATA;       //获取遥控器数据
+static Robot_control_data_t *UI_robot_mode_data; ///< 指向机器人模式的结构体指针
+const static Super_Capacitor_t *UI_super_capacitor;
+
+/* 键鼠操作重新绘制UI */
 static int mouse_keyboard_G = 0;
 
 /* 调用UI结构体--榴弹提示线上部分 */
@@ -37,21 +37,25 @@ void StartClientUiTask(void const *argument)
   Uart8_Dma_Tx_Init();
   UI_RC_DATA = Get_Rc_Parsed_RemoteData_Pointer();
   UI_JUDGE_DATA = Get_Judge_Data();
+  UI_robot_mode_data = Get_Parsed_RobotMode_Pointer();
+  UI_super_capacitor = Get_SuperCapacitor_Date();
+
   (void)UI_RC_DATA;
   (void)UI_JUDGE_DATA;
   (void)friction_motor_feedback_data;
+  (void)UI_robot_mode_data;
+  //while()
   for (;;)
   {
+    /* 设置机器人ID */
+    UI_Set_Comparable_Id(HERO_IN_WHICH_Camp);
     if(mouse_keyboard_G)
     {
-      
+    /* 通过手动按下字母发送静态UI - 榴弹提示线 */
+    GrenadeCueLine(UI_Color_Yellow);
     }
-    // /* 设置机器人ID */
-    // UI_Set_Comparable_Id(HERO_IN_WHICH_Camp);
-    // /* 通过手动按下字母发送静态UI - 榴弹提示线 */
-    // GrenadeCueLine(UI_Color_Yellow);
-    // /* 自动更新动态UI - 榴弹提示线 */
-    // Super_Capacitance();
+    /* 自动更新动态UI - 榴弹提示线 */
+    Super_Capacitance();
 
     osDelay(UI_SEND_DELAY_TIME_MS);
   }
@@ -112,9 +116,10 @@ void FrictionWheelSpeed(void)
 
 void Super_Capacitance(void)
 {
-  //Float_Draw(&SuperCapacitors, "021", UI_Graph_ADD, 0, UI_Color_Cyan, 12, 1, 2, 800, 540, UI_JUDGE_DATA);
-  //UI_ReFresh(SendBuff, 1, SuperCapacitors);
+  Float_Draw(&SuperCapacitors, "021", UI_Graph_ADD, 0, UI_Color_Cyan, 12, 1, 2, 800, 540, UI_super_capacitor->cap_voltage);
+  UI_ReFresh(SendBuff, 1, SuperCapacitors);
   /* 发送 */
+  printf_ui("%s", SendBuff);
 }
 
 void KeyG_Clicked_Status(void)
