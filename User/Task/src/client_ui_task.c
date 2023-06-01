@@ -49,8 +49,7 @@ void StartClientUiTask(void const *argument)
   {
     /* 设置机器人ID */
     UI_Set_Comparable_Id(HERO_IN_WHICH_Camp);
-    // if(mouse_keyboard_G)
-    if(1)
+    if(mouse_keyboard_G)
     {
     /* 通过手动按下字母发送静态UI - 榴弹提示线 */
     GrenadeCueLine(UI_Color_Yellow);
@@ -91,7 +90,7 @@ void GrenadeCueLine(uint8_t Color)
   /* 获得发送长度 */
   uint16_t len1 = UI_Get_Send_Data_Len(SendBuff);
   /* 发送 */
-  UI_Data_Send(SendBuff,len1);
+  //UI_Data_Send(SendBuff,len1);
   osDelay(100);
 
   /* 榴弹提示线下部分 */
@@ -107,7 +106,7 @@ void GrenadeCueLine(uint8_t Color)
   /* 获得发送长度 */
   uint16_t len2 = UI_Get_Send_Data_Len(SendBuff);
   /* 在此填入发送语句 */
-  UI_Data_Send(SendBuff,len2);
+  //UI_Data_Send(SendBuff,len2);
   osDelay(100);
 }
 
@@ -122,7 +121,7 @@ void Super_Capacitance(void)
   /* 获得发送长度 */
   uint16_t len3 = UI_Get_Send_Data_Len(SendBuff);
   /* 发送 */
-  UI_Data_Send(SendBuff,len3);
+  //UI_Data_Send(SendBuff,len3);
 }
 
 void KeyG_Clicked_Status(void)

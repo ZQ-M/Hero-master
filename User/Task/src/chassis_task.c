@@ -179,7 +179,7 @@ void StartChassisTask(void const *argument)
         // debug_print("%d\r\n",ATEST);
 
         /* µ×ÅÌÉÏµçÅÐ¶Ï */
-        if (Get_Judge_Data()->ext_game_robot_status_t.mains_power_chassis_output == 1)
+        if (referee_date_pt->ext_game_robot_status_t.mains_power_chassis_output == 1)
         // if (1)
         {
             /**

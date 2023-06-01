@@ -74,7 +74,7 @@ void StartShootTask(void const *argument)
         case fric_adaptive_speed_mode_ENUM: ///< 1 µÍËÙÄ¦²ÁÂÖ
 
         {
-            fric_speed = 4500;
+            fric_speed = 2500;
             is_ok_fire = 1;
             Laser_ON();
             break;
@@ -83,7 +83,7 @@ void StartShootTask(void const *argument)
         case fric_high_speed_mode_ENUM: ///< 2 ¸ßËÙÄ¦²ÁÂÖ
 
         {
-            fric_speed = 17000;
+            fric_speed = 19000;
             is_ok_fire = 1;
             Laser_ON();
             break;

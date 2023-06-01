@@ -1,4 +1,5 @@
 #include "reference_analysis_task.h"
+#include "usart3.h"
 
 extern osThreadId ReferenceTaskHandle;
 
@@ -23,12 +24,13 @@ void StartReferenceTaskTask(void const *argument)
         reference_get_data_event = osSignalWait(reference_task_get_date_signal, osWaitForever); ///< 等待来自中断的通知信号
         if (reference_get_data_event.status == osEventSignal)
         {
+            
             if (reference_get_data_event.value.signals == reference_task_get_date_signal) ///< 收到信号，开始解析
             {
                 uart8_rx_available_buffer_index = Get_Reference_Available_Bufferx();
                 memcpy(date_copy, reference_system_rxd_buffer[uart8_rx_available_buffer_index], *rxd_data_len); ///< 拷贝原始数据
-
-                //调试打印
+                
+                // 调试打印
                 // debug_showdata1("judge_buf_len", *rxd_data_len); //数据长度
                 // for (uint8_t i = 0; i < *rxd_data_len; i++)
                 // {

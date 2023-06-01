@@ -4,6 +4,7 @@
 #include "crc_check.h"
 #include "remote_task.h"
 #include "shoot_task.h"
+#include "usart3.h"
 
 /* 裁判系统调试宏定义 */
 #if 0
@@ -109,7 +110,7 @@ uint8_t Analysis_Judge_System(uint8_t *get_data, uint16_t data_len)
 	uint8_t a5_position[8]; //0xA5的位置
 	uint8_t a5_number = 0;  //0xA5的个数（数据包个数）
 	uint16_t data_length[8];  //每个data数据包的长度
-	
+//	debug_print("ABC");
 	//寻找帧头
 	Find_All_A5(get_data, data_len, a5_position, &a5_number);
 	
@@ -136,8 +137,8 @@ uint8_t Analysis_Judge_System(uint8_t *get_data, uint16_t data_len)
 			JUDGE_LOG("Analysis No.%d data fail.", i);
 			continue;
 		}
-		
-		// DEBUG_PRINT("x%d len:%d p:%d id:%d\r\n", i, data_length[i], a5_position[i], Analysis_Cmd_Id( &get_data[ (a5_position[i]) ] ) );
+//		debug_print("DEF");
+//		debug_print("x%d len:%d p:%d id:%d\r\n", i, data_length[i], a5_position[i], Analysis_Cmd_Id( &get_data[ (a5_position[i]) ] ) );
 		
 	}
 	

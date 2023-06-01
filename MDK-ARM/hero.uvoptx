@@ -157,9 +157,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>321</LineNumber>
+          <LineNumber>188</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134241564</Address>
+          <Address>134249464</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -168,7 +168,23 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\User\Task\src\chassis_task.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\hero\../User/Task/src/chassis_task.c\321</Expression>
+          <Expression>\\hero\../User/Task/src/chassis_task.c\188</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>115</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134220406</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\User\Hardware\src\judge_system.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\hero\../User/Hardware/src/judge_system.c\115</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -186,6 +202,21 @@
           <count>2</count>
           <WinNumber>1</WinNumber>
           <ItemText>okCnt</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>UI_JUDGE_DATA</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>get_data</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>data_len</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -262,7 +293,7 @@
 
   <Group>
     <GroupName>Application/User/Core</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1018,7 +1049,7 @@
 
   <Group>
     <GroupName>User/Device</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

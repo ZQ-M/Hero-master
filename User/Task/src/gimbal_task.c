@@ -258,7 +258,7 @@ void StartPitchTask(void const *argument)
         
         //debug_print("speed: %d\n", pitch_speed_toint);
     if((cnt++)>25){
-            debug_print("speed: %d\n", speedi16);
+            //debug_print("speed: %d\n", speedi16);
             Can_Send(3,
                 CAN_PITCH_OutPut_MOTOR_ID,
                 speedi16,
