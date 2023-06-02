@@ -157,7 +157,7 @@ void StartGimbalTask(void const *argument)
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_down_angle_limit, pitch_up_angle_limit);
 
                 /*两轴串级PID的角度环计算*/
-                pid_out[Pitch_target_Speed] = -(robot_mode_data_pt->virtual_rocker.ch1 / 5.0f);
+                pid_out[Pitch_target_Speed] = -(robot_mode_data_pt->virtual_rocker.ch1 / 2.0f);
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
             }
 
@@ -203,7 +203,7 @@ void StartGimbalTask(void const *argument)
                 Pitch_Angle_Limit(&pitch_angle_set, pitch_down_angle_limit, pitch_up_angle_limit);
 
                 /*两轴串级PID的角度环计算*/
-                pid_out[Pitch_target_Speed] = -(robot_mode_data_pt->virtual_rocker.ch1 / 5.0f);
+                pid_out[Pitch_target_Speed] = -(robot_mode_data_pt->virtual_rocker.ch1 / 2.0f);
                 /* 上一句需重写角度环PID计算函数，pitch轴使用陀螺仪数据 */
                 pid_out[Yaw_target_Speed] = Calc_Yaw_Angle360_Pid(yaw_angle_set, imu_data_usart6->angle.yaw_z);
                 break;
