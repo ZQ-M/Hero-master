@@ -18,7 +18,7 @@ static const int32_t *fire_one_bullet_signal;
 static const int32_t *fire_five_bullet_signal;
 
 static float wave_motor_speed = 0.0;
-static const int32_t wave_once_machine_angle = -31488;
+static const int32_t wave_once_machine_angle = -15744;
 
 static void Emission_Once_Time(void);
 

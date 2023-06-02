@@ -83,7 +83,7 @@ void StartShootTask(void const *argument)
         case fric_high_speed_mode_ENUM: ///< 2 高速摩擦轮
 
         {
-            fric_speed = 19000;
+            fric_speed = 14000;
             is_ok_fire = 1;
             Laser_ON();
             break;
@@ -94,7 +94,7 @@ void StartShootTask(void const *argument)
         {   
             //英雄不需要开弹舱盖子
             fric_speed = 0;
-            is_ok_fire = 1;
+            is_ok_fire = 0;
             Laser_OFF();
             break;
         }

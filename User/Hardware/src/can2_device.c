@@ -13,8 +13,8 @@ static Pid_Position_t motor_yaw_speed_pid = NEW_POSITION_PID(800, 0.5, 0.001, 10
 
 static Pid_Position_t motor_pitch_angle_pid = NEW_POSITION_PID(0.01, 0.001, 0.00, 100, 1278, 0, 3000, 500); ///< pitch电机角度PID
 
-static Pid_Position_t friction_motor_left_speed_pid = NEW_POSITION_PID(13, 0, 0.7, 2000, 16383, 0, 1000, 500);
-static Pid_Position_t friction_motor_right_speed_pid = NEW_POSITION_PID(13, 0, 0.7, 2000, 16383, 0, 1000, 500);
+static Pid_Position_t friction_motor_left_speed_pid = NEW_POSITION_PID(14, 0, 0.7, 2000, 16383, 0, 1000, 500);
+static Pid_Position_t friction_motor_right_speed_pid = NEW_POSITION_PID(14, 0, 0.7, 2000, 16383, 0, 1000, 500);
 
 static Pid_Position_t wave_motor_speed_pid = NEW_POSITION_PID(9, 0, 3, 2000, 16000, 0, 1000, 500);
 static Pid_Position_t wave_motor_angle_pid = NEW_POSITION_PID(0.25, 0.018, 0.005, 100, 4500, 0, 3000, 500); ///<  拨轮电机角度PID
